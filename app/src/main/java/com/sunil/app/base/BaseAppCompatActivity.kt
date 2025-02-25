@@ -8,12 +8,24 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavGraph
 import androidx.navigation.fragment.NavHostFragment
+import com.sunil.app.R
 import com.sunil.app.presentation.module.Navigator
 import com.sunil.app.databinding.ActivityBaseBinding
 import com.sunil.app.presentation.extension.castAs
 import com.sunil.app.presentation.extension.gone
 import com.sunil.app.presentation.extension.hideKeyboard
 import com.sunil.app.presentation.extension.visible
+import com.sunil.snackbar.AirySnackBar
+import com.sunil.snackbar.AirySnackBarSource
+import com.sunil.snackbar.AnimationAttribute
+import com.sunil.snackbar.GravityAttribute
+import com.sunil.snackbar.IconAttribute
+import com.sunil.snackbar.RadiusAttribute
+import com.sunil.snackbar.SizeAttribute
+import com.sunil.snackbar.SizeUnit
+import com.sunil.snackbar.TextAttribute
+import com.sunil.snackbar.Type
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -21,6 +33,10 @@ import javax.inject.Inject
  *
  */
 abstract class BaseAppCompatActivity : AppCompatActivity() {
+
+    companion object {
+        private const val TAG = "BaseAppCompatActivity"
+    }
 
     @Inject
     lateinit var navigator: Navigator
@@ -103,44 +119,37 @@ abstract class BaseAppCompatActivity : AppCompatActivity() {
         navController.graph = graph
     }*/
 
-    fun changeGraph(@NavigationRes resId: Int, block: (NavGraph) -> Unit) {
-        val graph = navController.navInflater.inflate(resId)
-        block(graph)
-        navController.graph = graph
+
+    fun showAlertMessage(message: String) {
+        try {
+            AirySnackBar.make(
+                source = AirySnackBarSource.FromActivity(activity = this),
+                type = Type.Custom(bgColor = R.color.bg_snackbar),
+                attributes =
+                listOf(
+                    TextAttribute.Text(text = message),
+                    TextAttribute.TextColor(textColor = R.color.white),
+                    TextAttribute.TextSize(size = 16f),
+                    IconAttribute.NoIcon,
+                    SizeAttribute.Margin(left = 0, right = 0, unit = SizeUnit.DP),
+                    SizeAttribute.Padding(
+                        top = 16,
+                        bottom = 16,
+                        right = 16,
+                        left = 16,
+                        unit = SizeUnit.DP
+                    ),
+                    RadiusAttribute.Radius(radius = 0f),
+                    GravityAttribute.Bottom,
+                    AnimationAttribute.FadeInOut
+                )
+            ).show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Timber.tag(TAG).e(e)
+        }
     }
 
-//    fun handleNavigation(command: NavigationCommand) {
-//        when (command) {
-//
-//            is NavigationCommand.ToDirection -> {
-//                navController?.navigate(command.directions)
-//            }
-////            is NavigationCommand.ToFailureCallback -> {
-////                handleFailure(command.errorType, command.callback)
-////            }
-////            is NavigationCommand.ToPopup -> {
-////                showPopup(command.popupUiModel, command.callbackPositive, command.callbackNegative)
-////            }
-////            is NavigationCommand.ToDirectionActivity -> {
-////                navigator.startActivity(this, command.className, command.flags, command.isClearTask)
-////            }
-//
-//            is NavigationCommand.ToDeepLink -> {
-//
-//            }
-//            is NavigationCommand.LoadingDialog -> {
-//                Timber.d("Loading Trigger : ${command.isShow}")
-//
-//            }
-//            is NavigationCommand.Back -> {
-//                navController?.let {
-//                    if (!it.popBackStack()) {
-//                        finish()
-//                    }
-//                }
-//            }
-//        }
-//    }
 
 }
 

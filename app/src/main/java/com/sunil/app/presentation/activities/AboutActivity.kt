@@ -51,15 +51,13 @@ class AboutActivity : BaseAppCompatActivity() {
 
         viewModel.messageLiveData.observe(this) {
             if (it.isNotEmpty()) {
-                Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+                showAlertMessage(it)
             }
         }
 
         viewModel.observeGetAllData.observe(this) {
             Timber.tag(TAG).d("observeGetAllData $it")
-//            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
-
+//            it[0].name?.let { it1 -> showAlertMessage(it1) }
         }
-
     }
 }

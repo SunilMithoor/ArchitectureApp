@@ -26,12 +26,12 @@ fun loadVersionProperties(fileName: String): Properties {
 
 android {
     namespace = "com.sunil.app"
-    compileSdk = 35
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.sunil.app"
-        minSdk = 21
-        targetSdk = 35
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
         multiDexEnabled = true
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -48,7 +48,7 @@ android {
     buildFeatures {
         buildConfig = true
         viewBinding = true
-//        dataBinding = true
+        dataBinding = true
     }
 
     // Load keystore properties
@@ -177,6 +177,7 @@ dependencies {
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.databinding.runtime)
 
     //kapt
     kapt(libs.hilt.compiler)
@@ -189,5 +190,8 @@ dependencies {
 
     //release
     releaseImplementation(libs.chucker.library.no.op)
+
+    //project
+    implementation(project(":snackbar"))
 
 }

@@ -8,47 +8,49 @@ import timber.log.Timber
 
 @HiltAndroidApp
 class AppApplication : Application() {
-    private var TAG: String = "AppApplication"
-
-    init {
-        activityFirstLaunch = true
-    }
-
 
     override fun onCreate() {
         super.onCreate()
-        instance = this
-        initTimber()
+        initializeTimber()
+        appInstance = this
+        Timber.tag(TAG).d("Application created")
     }
 
-
-    private fun initTimber() {
-        // This will initialize Timber
+    private fun initializeTimber() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
             Timber.tag(TAG).d("Timber initialized")
         }
-        Timber.tag(TAG).d("Application created")
     }
-
 
     companion object {
-        // return true or false
-        var isActivityVisible: Boolean = false
-        var activityFirstLaunch: Boolean = false // Variable that will check the
+        // Use constants for better readability and maintainability
+        private const val TAG = "AppApplication"
+
+        // Use a backing property for better control over access and modification
+        private var _appInstance: AppApplication? = null
 
         @get:Synchronized
-        var instance: AppApplication? = null
-            private set
+        var appInstance: AppApplication? = null
+            get() = _appInstance ?: throw IllegalStateException("AppApplication not initialized")
 
-        fun activityResumed() {
-            isActivityVisible = true // this will set true when activity resumed
+        // Use a backing property for better control over access and modification
+        private var _isActivityVisible = false
+        val isActivityVisible: Boolean
+            get() = _isActivityVisible
+
+        // Use a backing property for better control over access and modification
+        private var _isFirstLaunch = true
+        val isFirstLaunch: Boolean
+            get() = _isFirstLaunch
+
+        fun onActivityResumed() {
+            _isActivityVisible = true
         }
 
-        fun activityPaused() {
-            activityFirstLaunch = false
-            isActivityVisible = false // this will set false when activity paused
+        fun onActivityPaused() {
+            _isFirstLaunch = false
+            _isActivityVisible = false
         }
     }
-
 }

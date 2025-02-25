@@ -38,7 +38,7 @@
         tools:targetApi="31" >
 
         <activity
-            android:name=".activities.AboutActivity"
+            android:name=".presentation.activities.AboutActivity"
             android:configChanges="orientation|keyboardHidden|screenSize|locale"
             android:exported="true"
             android:launchMode="singleTask"

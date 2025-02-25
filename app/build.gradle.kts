@@ -1,4 +1,3 @@
-import com.android.build.api.artifact.SingleArtifact
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -6,6 +5,9 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.hilt.android)
+    kotlin("kapt")
 }
 
 
@@ -95,12 +97,26 @@ android {
             )
         }
     }
+
+
+    packaging {
+        resources {
+            excludes += setOf(
+                "META-INF/LICENSE.md",
+                "META-INF/NOTICE.md",
+                "META-INF/LICENSE.txt",
+                "META-INF/NOTICE.txt"
+            )
+        }
+    }
+
+
 }
 
 androidComponents.onVariants { variant ->
     val flavorName = variant.flavorName ?: "devDebug" // Default if null
 //    val buildTypeName = variant.buildType ?: "debug" // Default if null
-    val apkName = "MG App"
+//    val apkName = "MG App"
 
     // Determine correct flavor key
     val flavorKey = when {
@@ -129,6 +145,7 @@ androidComponents.onVariants { variant ->
 }
 
 dependencies {
+
     //testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -138,8 +155,39 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    implementation(libs.dagger.hilt)
+    implementation(libs.hilt.android)
     implementation(libs.hilt.navigation)
     implementation(libs.timber)
+    implementation(libs.gson)
+    implementation(libs.room)
+    implementation(libs.retrofit2)
+    implementation(libs.converter.gson)
+    implementation(libs.converter.scalars)
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+    implementation(libs.logging.interceptor)
+    implementation(libs.swiperefreshlayout)
+    implementation(libs.multidex)
+    implementation(libs.recyclerview)
+    implementation(libs.constraintlayout)
+    implementation(libs.fragment.ktx)
+    implementation(libs.navigation.fragment.ktx)
+    implementation(libs.navigation.ui.ktx)
+    implementation(libs.lifecycle.extensions)
+    implementation(libs.lifecycle.viewmodel.ktx)
+    implementation(libs.lifecycle.livedata.ktx)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.play.services)
+
+    //kapt
+    kapt(libs.hilt.compiler)
+
+    //annotation
+    annotationProcessor(libs.room.compiler)
+
+    //debug
+    debugImplementation(libs.chucker.library)
+
+    //release
+    releaseImplementation(libs.chucker.library.no.op)
 
 }

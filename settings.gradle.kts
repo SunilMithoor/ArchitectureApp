@@ -19,5 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "CleanApp"
+rootProject.name = "App"
 include(":app")
+include(":snackbar")

@@ -1,4 +1,8 @@
 [versions]
+jdk = "17"
+compileSdk = "35"
+minSdk = "21"
+targetSdk = "35"
 agp = "8.5.2"
 kotlin = "1.9.23"
 kotlin-kapt = "1.9.0"
@@ -27,6 +31,7 @@ navigation-ktx="2.8.7"
 coroutines="1.9.0"
 lifecycle="2.8.7"
 lifecycle-extensions="2.2.0"
+databinding="8.8.1"
 
 
 [libraries]
@@ -63,10 +68,11 @@ lifecycle-viewmodel-ktx= { group = "androidx.lifecycle", name = "lifecycle-viewm
 lifecycle-livedata-ktx= { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
 kotlinx-coroutines-android= { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlinx-coroutines-play-services= { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "coroutines" }
-
+databinding-runtime= { group = "androidx.databinding", name = "databinding-runtime", version.ref = "databinding" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }

@@ -26,8 +26,8 @@ class RestfulViewModel @Inject constructor(
         private const val TAG = "RestfulViewModel"
     }
 
-    private val _allData: MutableLiveData<ViewState<GetAllDataResponse>> = MutableLiveData()
-    val observeGetAllData: LiveData<ViewState<GetAllDataResponse>> get() = _allData
+    private val _allData: MutableLiveData<GetAllDataResponse> = MutableLiveData()
+    val observeGetAllData: LiveData<GetAllDataResponse> get() = _allData
 
 
     fun getAllData() {
@@ -55,7 +55,8 @@ class RestfulViewModel @Inject constructor(
 
             is ViewState.RenderSuccess<GetAllDataResponse> -> {
                 _message.postValue (codeSnippet.getStrings(AppString.success))
-                _allData.postValue(dataState)
+                _allData.postValue(dataState.output)
+                dataState.output
             }
         }
     }

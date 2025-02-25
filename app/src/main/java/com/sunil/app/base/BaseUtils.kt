@@ -8,6 +8,12 @@ import timber.log.Timber
 
 private const val TAG = "AppUtils"
 
+/**
+ * Gets the app name
+ *
+ * @param context
+ * @return appname
+ */
 fun getAppName(context: Context?): String {
     if (context == null) {
         Timber.tag(TAG).e("Context is null")
@@ -27,35 +33,12 @@ fun getAppName(context: Context?): String {
     }.getOrDefault("App")
 }
 
-
-//fun getAppVersion(context: Context?): String {
-//    if (context == null) {
-//        Timber.tag(TAG).e("Context is null")
-//        return "V 1.0.0"
-//    }
-//    return runCatching {
-//        val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//            context.packageManager.getPackageInfo(
-//                context.packageName,
-//                PackageManager.PackageInfoFlags.of(0)
-//            )
-//        } else {
-//            @Suppress("DEPRECATION")
-//            context.packageManager.getPackageInfo(context.packageName, 0)
-//        }
-//
-//        val flavor = if (BuildConfig.FLAVOR.isNotEmpty()) "${BuildConfig.FLAVOR} " else ""
-//        val versionName = packageInfo.versionName ?: "Unknown"
-//        "$flavor V $versionName"
-//    }.onFailure { e ->
-//        when (e) {
-//            is PackageManager.NameNotFoundException -> Timber.tag(TAG).e(e, "Failed to get package info")
-//            else -> Timber.tag(TAG).e(e, "Unexpected error getting app version")
-//        }
-//    }.getOrDefault("Unknown")
-//}
-
-
+/**
+ * Gets the app version
+ *
+ * @param context
+ * @return app version
+ */
 fun getAppVersion(context: Context?): String {
     if (context == null) {
         Timber.tag(TAG).e("Context is null")

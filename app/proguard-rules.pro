@@ -19,3 +19,17 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep javax.activation
+-keep class javax.activation.** { *; }
+
+# Keep XML-related classes
+-keep class javax.xml.stream.** { *; }
+-keep class org.codehaus.stax2.** { *; }
+-keep class com.fasterxml.jackson.dataformat.xml.** { *; }
+-keep class com.ctc.wstx.** { *; }
+
+# Keep AWT Data Transfer
+-keep class java.awt.datatransfer.** { *; }
+
+#-keep class com.sunil.app.presentation.viewmodel.RestfulViewModel { *; }

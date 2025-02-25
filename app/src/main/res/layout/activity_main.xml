@@ -11,7 +11,7 @@
         android:padding="20dp">
 
         <TextView
-            android:id="@+id/appNameTextView"
+            android:id="@+id/myView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="10dp"
@@ -19,19 +19,7 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/versionTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Version"
-            android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/data"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Version"
-            android:textSize="16sp" />
 
     </LinearLayout>
 

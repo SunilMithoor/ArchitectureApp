@@ -1,13 +1,12 @@
-package com.sunil.app.presentation.viewmodel
+package com.sunil.app.presentation.viewmodel.restful
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.sunil.app.base.BaseViewModel
 import com.sunil.app.domain.entity.response.GetAllDataResponse
 import com.sunil.app.domain.model.ViewState
-import com.sunil.app.domain.usecase.GetAllDataUseCase
 import com.sunil.app.domain.usecase.None
+import com.sunil.app.domain.usecase.restful.GetAllDataUseCase
 import com.sunil.app.domain.utils.getViewStateFlowForNetworkCall
 import com.sunil.app.presentation.extension.AppString
 import com.sunil.app.presentation.util.CodeSnippet
@@ -50,11 +49,11 @@ class RestfulViewModel @Inject constructor(
 
             is ViewState.RenderFailure -> {
                 Timber.tag(TAG).d("Failure ${dataState.throwable.message}")
-                _message.postValue(dataState.throwable.message)
+                _message.value = dataState.throwable.message ?: "Failure"
             }
 
             is ViewState.RenderSuccess<GetAllDataResponse> -> {
-                _message.postValue (codeSnippet.getStrings(AppString.success))
+                _message.value = codeSnippet.getString(AppString.success) ?: "Success"
                 _allData.postValue(dataState.output)
                 dataState.output
             }

@@ -12,7 +12,7 @@ private const val TAG = "AppUtils"
  * Gets the app name
  *
  * @param context
- * @return appname
+ * @return app name
  */
 fun getAppName(context: Context?): String {
     if (context == null) {
@@ -57,14 +57,18 @@ fun getAppVersion(context: Context?): String {
 
         val versionName = packageInfo.versionName ?: "Unknown"
         val flavor = BuildConfig.FLAVOR
-        val formattedFlavor =when {
+        val formattedFlavor = when {
             flavor.equals("dev", ignoreCase = true) -> "Dev"
             flavor.equals("stage", ignoreCase = true) -> "Stage"
             else -> flavor.replaceFirstChar { it.uppercase() }
         }
 
         val formattedVersion = when {
-            flavor.equals("dev", ignoreCase = true) || flavor.equals("stage", ignoreCase = true) -> "$formattedFlavor V $versionName"
+            flavor.equals("dev", ignoreCase = true) || flavor.equals(
+                "stage",
+                ignoreCase = true
+            ) -> "$formattedFlavor V $versionName"
+
             else -> "V $versionName"
         }
         formattedVersion

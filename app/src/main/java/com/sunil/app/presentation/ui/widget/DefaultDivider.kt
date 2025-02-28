@@ -2,8 +2,7 @@ package com.sunil.app.presentation.ui.widget
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Divider
-import androidx.compose.material.Surface
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -14,9 +13,9 @@ import com.sunil.app.presentation.ui.util.preview.PreviewContainer
 
 @Composable
 fun DefaultDivider() {
-    Divider(
+    HorizontalDivider(
         modifier = Modifier.shadow(elevation = 5.dp),
-        thickness = 0.3.dp,
+        thickness = 0.3.dp
     )
 }
 
@@ -25,7 +24,7 @@ fun DefaultDivider() {
 @Composable
 fun DefaultDividerPreview() {
     PreviewContainer {
-        Surface(color = Color.Gray, modifier = Modifier.padding(10.dp)) {
+        androidx.compose.material3.Surface(color = Color.Gray, modifier = Modifier.padding(10.dp)) {
             DefaultDivider()
         }
     }

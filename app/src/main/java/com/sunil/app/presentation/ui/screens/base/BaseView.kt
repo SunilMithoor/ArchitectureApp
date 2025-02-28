@@ -10,6 +10,7 @@ import com.sunil.app.presentation.ui.theme.blue700
 import com.sunil.app.presentation.ui.theme.green700
 import com.sunil.app.presentation.ui.theme.orange700
 import com.sunil.app.presentation.ui.theme.purple700
+import com.sunil.custom_snackbar.presentation.rememberComposeModifiedSnackbarState
 
 @Composable
 fun BaseView(
@@ -24,6 +25,8 @@ fun BaseView(
         ColorPallet.PURPLE -> purple700
         else -> green700
     }
+    val state = rememberComposeModifiedSnackbarState()
+
     MaterialAppTheme(
         darkTheme = appThemeState.darkTheme, colorPallet = appThemeState.pallet
     ) {

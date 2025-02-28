@@ -32,4 +32,4 @@
 # Keep AWT Data Transfer
 -keep class java.awt.datatransfer.** { *; }
 
-#-keep class com.sunil.app.presentation.viewmodel.RestfulViewModel { *; }
+#-keep class com.sunil.app.presentation.viewmodel.restful.RestfulViewModel { *; }

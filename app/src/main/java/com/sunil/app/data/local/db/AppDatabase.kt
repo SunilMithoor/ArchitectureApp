@@ -2,25 +2,33 @@ package com.sunil.app.data.local.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.sunil.app.data.local.db.dao.UserDao
-import com.sunil.app.data.local.db.entity.UserEntity
+import com.sunil.app.data.local.db.dao.movies.FavoriteMovieDao
+import com.sunil.app.data.local.db.dao.movies.MovieDao
+import com.sunil.app.data.local.db.dao.movies.MovieRemoteKeyDao
+import com.sunil.app.data.local.db.dao.user.UserDao
+import com.sunil.app.data.local.db.entity.movies.FavoriteMovieDbData
+import com.sunil.app.data.local.db.entity.movies.MovieDbData
+import com.sunil.app.data.local.db.entity.movies.MovieRemoteKeyDbData
+import com.sunil.app.data.local.db.entity.user.UserDbData
 
 
 /**
- * Created by Sunil
+ * Created by Sunil on 13/01/2025
  */
-
 @Database(
-    entities = [UserEntity::class],
-    version = 1
+    entities = [UserDbData::class, MovieDbData::class, FavoriteMovieDbData::class, MovieRemoteKeyDbData::class],
+    version = 1,
+    exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
-
-    abstract val userDao: UserDao
+    abstract fun userDao(): UserDao
+    abstract fun movieDao(): MovieDao
+    abstract fun movieRemoteKeysDao(): MovieRemoteKeyDao
+    abstract fun favoriteMovieDao(): FavoriteMovieDao
 }
 
 
-//@Database(entities = [UserEntity::class], version = 2) // Increment version when you change the schema
+//@Database(entities = [UserDbData::class], version = 2) // Increment version when you change the schema
 //abstract class AppDatabase : RoomDatabase() {
 //    abstract fun userDao(): UserDao
 //

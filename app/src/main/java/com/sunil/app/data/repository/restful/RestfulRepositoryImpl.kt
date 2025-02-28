@@ -1,9 +1,9 @@
-package com.sunil.app.data.repository
+package com.sunil.app.data.repository.restful
 
-import com.sunil.app.data.remote.retrofit.datasource.RestfulRemoteDataSource
+import com.sunil.app.data.remote.retrofit.datasource.restful.RestfulRemoteDataSource
 import com.sunil.app.domain.entity.response.GetAllDataResponse
 import com.sunil.app.domain.model.IOTaskResult
-import com.sunil.app.domain.repository.RestfulRepository
+import com.sunil.app.domain.repository.restful.RestfulRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

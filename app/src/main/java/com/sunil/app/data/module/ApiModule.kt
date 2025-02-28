@@ -9,6 +9,7 @@ import com.sunil.app.BuildConfig
 import com.sunil.app.data.local.sharedprefs.AppSharedPreferences
 import com.sunil.app.data.remote.retrofit.api.ApiAppBaseUrl1Service
 import com.sunil.app.data.remote.retrofit.api.ApiAppBaseUrl2Service
+import com.sunil.app.data.remote.retrofit.api.ApiAppBaseUrl3Service
 import com.sunil.app.data.utils.TokenAuthenticator
 import com.sunil.app.data.utils.UserAgentInterceptor
 import dagger.Module
@@ -46,6 +47,14 @@ object ApiModule {
     fun provideRetrofitAppBaseUrl2(@Client client: OkHttpClient): Retrofit {
         Timber.tag(TAG).d("Building Retrofit for App Base URL 2")
         return createRetrofit(BuildConfig.BASE_URL_2, client)
+    }
+
+    @Provides
+    @Singleton
+    @AppBaseUrl3
+    fun provideRetrofitAppBaseUrl3(@Client client: OkHttpClient): Retrofit {
+        Timber.tag(TAG).d("Building Retrofit for App Base URL 3")
+        return createRetrofit(BuildConfig.BASE_URL_3, client)
     }
 
     private fun createRetrofit(baseUrl: String, client: OkHttpClient): Retrofit {
@@ -130,5 +139,12 @@ object ApiModule {
     fun provideApiAppBaseUrl2Service(@AppBaseUrl2 retrofit: Retrofit): ApiAppBaseUrl2Service {
         Timber.tag(TAG).d("Providing ApiAppBaseUrl2Service")
         return retrofit.create(ApiAppBaseUrl2Service::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideApiAppBaseUrl3Service(@AppBaseUrl3 retrofit: Retrofit): ApiAppBaseUrl3Service {
+        Timber.tag(TAG).d("Providing ApiAppBaseUrl3Service")
+        return retrofit.create(ApiAppBaseUrl3Service::class.java)
     }
 }

@@ -13,4 +13,12 @@ annotation class AppBaseUrl2
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
+annotation class AppBaseUrl3
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
 annotation class Client
+
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class AppSettingsSharedPreference

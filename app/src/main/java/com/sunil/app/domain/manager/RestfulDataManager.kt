@@ -3,7 +3,7 @@ package com.sunil.app.domain.manager
 
 import com.sunil.app.domain.entity.response.GetAllDataResponse
 import com.sunil.app.domain.model.IOTaskResult
-import com.sunil.app.domain.repository.RestfulRepository
+import com.sunil.app.domain.repository.restful.RestfulRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

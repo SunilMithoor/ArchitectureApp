@@ -1,6 +1,10 @@
 package com.sunil.app.domain.model
 
 
+import com.sunil.app.domain.model.Result.Error
+import com.sunil.app.domain.model.Result.Success
+
+
 sealed class IOTaskResult<out DTO : Any> {
     data class OnSuccess<out DTO : Any>(val data: DTO) : IOTaskResult<DTO>()
     data class OnFailed(val throwable: Throwable) : IOTaskResult<Nothing>()
@@ -34,4 +38,27 @@ sealed class ViewState<out T : Any> {
      * @param throwable [Throwable] instance containing the root cause of the failure in a [String]
      */
     data class RenderFailure(val throwable: Throwable) : ViewState<Nothing>()
+}
+
+
+sealed class Result<T> {
+    data class Success<T>(val data: T) : Result<T>()
+    data class Error<T>(val error: Throwable) : Result<T>()
+}
+
+inline fun <T> Result<T>.onSuccess(
+    block: (T) -> Unit
+): Result<T> = if (this is Success) also { block(data) } else this
+
+inline fun <T> Result<T>.onError(
+    block: (Throwable) -> Unit
+): Result<T> = if (this is Error) also { block(error) } else this
+
+fun <T> Result<T>.asSuccessOrNull(): T? = (this as? Success)?.data
+
+inline fun <A, T> Result<T>.map(transform: (T) -> A): Result<A> {
+    return when (this) {
+        is Success -> Success(transform(data))
+        is Error -> Error(error)
+    }
 }

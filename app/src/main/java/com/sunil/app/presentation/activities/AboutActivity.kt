@@ -11,7 +11,7 @@
 //import com.sunil.app.base.getAppVersion
 //import com.sunil.app.databinding.ActivityAboutBinding
 //import com.sunil.app.presentation.extension.viewBinding
-//import com.sunil.app.presentation.viewmodel.RestfulViewModel
+//import com.sunil.app.presentation.viewmodel.restful.RestfulViewModel
 //import dagger.hilt.android.AndroidEntryPoint
 //import timber.log.Timber
 //

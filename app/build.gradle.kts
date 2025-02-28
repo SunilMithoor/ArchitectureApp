@@ -7,7 +7,9 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.dokka)
     alias(libs.plugins.hilt.android)
-    kotlin("kapt")
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.serialization)
+//    kotlin("kapt")
 }
 
 
@@ -44,6 +46,7 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs += listOf("-Xjvm-default=all")
     }
 
     composeOptions {
@@ -112,11 +115,11 @@ android {
                 "META-INF/LICENSE.md",
                 "META-INF/NOTICE.md",
                 "META-INF/LICENSE.txt",
-                "META-INF/NOTICE.txt"
+                "META-INF/NOTICE.txt",
+                "META-INF/gradle/incremental.annotation.processors"
             )
         }
     }
-
 
 }
 
@@ -147,8 +150,10 @@ androidComponents.onVariants { variant ->
         output.versionCode.set(versionCode)
         output.versionName.set(versionName)
     }
+}
 
-
+kotlin {
+    jvmToolchain(libs.versions.jdk.get().toInt())
 }
 
 dependencies {
@@ -166,9 +171,14 @@ dependencies {
     implementation(libs.androidx.appcompat)
 //    implementation(libs.material)
     implementation(libs.hilt.android)
+    implementation(libs.hilt.android.compiler)
+//    implementation(libs.hilt.compiler)
+    implementation(libs.hilt.work)
     implementation(libs.timber)
     implementation(libs.gson)
-    implementation(libs.room)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    implementation(libs.room.paging)
     implementation(libs.retrofit2)
     implementation(libs.converter.gson)
     implementation(libs.converter.scalars)
@@ -204,13 +214,16 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.coil.compose)
     implementation(libs.hilt.navigation.compose)
-//    implementation(libs.font.awesome.compose)
+    implementation(libs.paging.compose)
+    implementation(libs.work.runtime.ktx)
 
 
     implementation(platform(libs.compose.bom))
 
-    //kapt
-    kapt(libs.hilt.compiler)
+    //ksp
+    ksp(libs.room.compiler)
+    ksp(libs.hilt.android.compiler)
+    ksp(libs.hilt.compiler)
 
     //annotation
     annotationProcessor(libs.room.compiler)

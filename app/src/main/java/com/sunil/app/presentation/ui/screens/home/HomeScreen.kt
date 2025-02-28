@@ -57,26 +57,26 @@ fun HomeScreenContent(
         }
     }
     Text(text = "Home", style = typography.h5, modifier = Modifier.padding(8.dp))
-//    ComposeModifiedSnackbarSuccess(
-//        state = state,
-//        position = ComposeModifiedSnackbarPosition.Bottom,
-//        duration = ComposeModifierSnackbarDuration.SHORT,
-//        withDismissAction = true
-//    )
+    ComposeModifiedSnackbarSuccess(
+        state = state,
+        position = ComposeModifiedSnackbarPosition.Bottom,
+        duration = ComposeModifierSnackbarDuration.SHORT,
+        withDismissAction = true
+    )
     ComposeModifiedSnackbarError(
         state = state,
         position = ComposeModifiedSnackbarPosition.Bottom,
         duration = ComposeModifierSnackbarDuration.SHORT,
         withDismissAction = true
     )
-//    ComposeModifiedSnackbar(
-//        state = state,
-//        position = ComposeModifiedSnackbarPosition.Float,
-//        duration = ComposeModifierSnackbarDuration.INFINITE,
-//        containerColor = ComposeModifiedSnackbarColor.CustomColor(Color.Black),
-//        contentColor = ComposeModifiedSnackbarColor.TextWhite,
-//        withDismissAction = true
-//    )
+    ComposeModifiedSnackbar(
+        state = state,
+        position = ComposeModifiedSnackbarPosition.Float,
+        duration = ComposeModifierSnackbarDuration.INFINITE,
+        containerColor = ComposeModifiedSnackbarColor.CustomColor(Color.Black),
+        contentColor = ComposeModifiedSnackbarColor.TextWhite,
+        withDismissAction = true
+    )
 
 }
 

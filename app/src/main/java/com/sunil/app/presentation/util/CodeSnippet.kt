@@ -3,32 +3,31 @@ package com.sunil.app.presentation.util
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import androidx.core.content.ContextCompat
-import java.util.regex.Pattern
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
+class CodeSnippet @Inject constructor(@ApplicationContext private val context: Context) {
 
-class CodeSnippet(val context: Context?) {
-
-    fun getContexts() : Context? {
+    fun getContext(): Context {
         return context
     }
 
-    fun getDrawables(drawable: Int) : Drawable?{
-        return context?.let { ContextCompat.getDrawable(it, drawable) }
+    fun getDrawable(drawableId: Int): Drawable? {
+        return ContextCompat.getDrawable(context, drawableId)
     }
 
-    fun getColors(drawable: Int) : Int?{
-        return context?.let { ContextCompat.getColor(it, drawable) }
+    fun getColor(colorId: Int): Int {
+        return ContextCompat.getColor(context, colorId)
     }
 
-    fun getStrings(drawable: Int) : String?{
-        return context?.getString(drawable)
+    fun getString(stringId: Int): String {
+        return context.getString(stringId)
     }
 
-    fun getResources() : Resources? {
-        return context?.resources
+    fun getResources(): Resources {
+        return context.resources
     }
-
 }

@@ -1,35 +1,42 @@
 package com.sunil.app.base
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.sunil.app.presentation.extension.AppString
 import com.sunil.app.presentation.util.CodeSnippet
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import timber.log.Timber
 
-abstract class BaseViewModel(
-    protected val codeSnippet: CodeSnippet
-) : ViewModel() {
+/**
+ * Base ViewModel for managing common UI state and handling exceptions.
+ *
+ * @author Sunil
+ * @version 1.0
+ * @since 2025-02-28
+ */
+abstract class BaseViewModel(protected val codeSnippet: CodeSnippet) : ViewModel() {
 
     companion object {
-        private const val TAG = "BaseViewModel"
+        private const val TAG = "BaseViewModel" // Log tag for debugging
     }
 
-    val _message: MutableLiveData<String> = MutableLiveData()
-    val messageLiveData: LiveData<String> get() = _message
+    /** Holds UI messages as a state flow */
+    val _message = MutableStateFlow("")
+    val messageStateFlow: StateFlow<String> get() = _message
 
-    val errorMessageResIdLiveData = MutableLiveData<Int>()
-    val validationResultLiveData = MutableLiveData<Boolean>()
+    /** Holds resource ID for UI messages */
+    val _messageResId = MutableStateFlow(-1)
+    val messageResIdStateFlow: StateFlow<Int> get() = _messageResId
 
-
+    /** Exception handler for coroutine errors */
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        // Handle the exception here
-        Timber.tag(TAG).e(throwable)
-        _message.postValue(codeSnippet.getStrings(AppString.internet_too_slow))
+        Timber.tag(TAG).e(throwable) // Log the error
+        _message.value = codeSnippet.getString(AppString.internet_too_slow) // Update UI message
     }
-    val coroutineScope = CoroutineScope(Dispatchers.IO + exceptionHandler)
 
+    /** Coroutine scope with an exception handler */
+    val coroutineScope = CoroutineScope(Dispatchers.IO + exceptionHandler)
 }

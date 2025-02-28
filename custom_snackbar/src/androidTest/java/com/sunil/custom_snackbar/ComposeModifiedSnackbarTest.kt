@@ -1,4 +1,4 @@
-package com.example.modified_snackbar
+package com.sunil.custom_snackbar
 
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule

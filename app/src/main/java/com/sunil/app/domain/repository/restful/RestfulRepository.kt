@@ -1,4 +1,4 @@
-package com.sunil.app.domain.repository
+package com.sunil.app.domain.repository.restful
 
 import com.sunil.app.domain.entity.response.GetAllDataResponse
 import com.sunil.app.domain.model.IOTaskResult

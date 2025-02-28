@@ -8,4 +8,17 @@
     <string name="navigation_item_home">Home</string>
     <string name="navigation_item_notifications">Notifications</string>
     <string name="navigation_item_profile">Profile</string>
+    <string name="change_color">Change color</string>
+    <string name="dark_theme">Dark Theme</string>
+    <string name="feed">Feed</string>
+    <string name="favorites">Favorites</string>
+    <string name="movie_details_placeholder_text">Click on a movie\n to view its details.</string>
+    <string name="search">Search</string>
+    <string name="no_search_results_title">No Results Found</string>
+    <string name="no_search_results_subtitle">No results for \"%s\". Please try another search.</string>
+    <string name="no_favorite_movies_title">No Favorites Added</string>
+    <string name="no_favorite_movies_subtitle">Save a favorite movie and it\nwill show up here.</string>
+    <string name="first_time_search_title">Find Your Next Watch</string>
+    <string name="first_time_search_subtitle">Start typing to search for movies and shows.</string>
+    <string name="retry">Retry</string>
 </resources>

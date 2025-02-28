@@ -16,7 +16,8 @@ sealed class Page {
     data object Search : Page()
 
     @Serializable
-    data class MovieDetails(val movieId: Int) : Page()
+//    data class MovieDetails(val movieId: Int) : Page()
+    data class MovieDetails(val movieId: Int = -1) : Page()
 }
 
 sealed class Graph {

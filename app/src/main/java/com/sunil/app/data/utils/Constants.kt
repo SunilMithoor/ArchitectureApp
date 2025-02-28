@@ -23,4 +23,5 @@ object AppConstants {
     const val USER = "user"
     const val USER_DATA = "user_data"
     const val EMPTY = ""
+    const val DARK_MODE = "dark_mode"
 }

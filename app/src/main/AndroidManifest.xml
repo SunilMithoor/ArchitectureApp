@@ -38,8 +38,8 @@
         tools:targetApi="31" >
 
         <activity
-            android:name=".presentation.activities.AboutActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize|locale"
+            android:name=".presentation.ui.screens.main.MainActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize|uiMode|locale"
             android:exported="true"
             android:launchMode="singleTask"
             android:theme="@style/Theme.CleanApp">
@@ -50,6 +50,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:node="remove" />
 
     </application>
 

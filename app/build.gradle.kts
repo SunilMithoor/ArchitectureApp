@@ -41,13 +41,20 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
 
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.kotlinCompiler.get()
+    }
+
+
     buildFeatures {
         buildConfig = true
-        viewBinding = true
+//        viewBinding = true
+        compose = true
         dataBinding = true
     }
 
@@ -146,17 +153,19 @@ androidComponents.onVariants { variant ->
 
 dependencies {
 
+
     //testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
     //libraries
+    //kotlin
     implementation(libs.androidx.core.ktx)
+    //androidX
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
+//    implementation(libs.material)
     implementation(libs.hilt.android)
-    implementation(libs.hilt.navigation)
     implementation(libs.timber)
     implementation(libs.gson)
     implementation(libs.room)
@@ -178,6 +187,27 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.databinding.runtime)
+//    implementation(libs.compose.material3)
+    implementation(libs.androidx.material3.android)
+    implementation(libs.compose.material)
+    implementation(libs.compose.material.icons.extended)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.test.manifest)
+    implementation(libs.compose.ui.util)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.animation)
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.runtime.saveable)
+
+    implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.navigation.compose)
+    implementation(libs.coil.compose)
+    implementation(libs.hilt.navigation.compose)
+//    implementation(libs.font.awesome.compose)
+
+
+    implementation(platform(libs.compose.bom))
 
     //kapt
     kapt(libs.hilt.compiler)
@@ -185,13 +215,14 @@ dependencies {
     //annotation
     annotationProcessor(libs.room.compiler)
 
-    //debug
+    //debugImplementation
     debugImplementation(libs.chucker.library)
+    debugImplementation(libs.compose.ui.tooling)
 
     //release
     releaseImplementation(libs.chucker.library.no.op)
 
     //project
-    implementation(project(":snackbar"))
+    implementation(project(":custom_snackbar"))
 
 }

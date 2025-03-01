@@ -34,7 +34,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import com.sunil.app.R
-import com.sunil.app.domain.extension.toCamelCase
+import com.sunil.app.domain.extension.toTitleCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -375,7 +375,7 @@ fun MaterialTextView.clear() {
 }
 
 fun MaterialTextView.toCamelCase() {
-    text = value.toCamelCase()
+    text = value.toTitleCase()
 }
 
 var MaterialTextView.resHintString: Int

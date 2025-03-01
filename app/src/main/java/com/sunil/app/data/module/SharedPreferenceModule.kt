@@ -11,6 +11,13 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 
+/**
+ * Provides the AppSharedPreferences instance.
+ *
+ * @param context The application context.
+ * @param gson The Gson instance for JSON serialization and deserialization.
+ * @return An instance of AppSharedPreferences.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object SharedPreferenceModule {

@@ -7,4 +7,4 @@ package com.sunil.app.data.exception
  * @version 1.0
  * @since 2025-01-28
  */
-class DataNotAvailableException : Throwable("Data Not Available")
+class DataNotAvailableException(s: String) : Throwable(String())

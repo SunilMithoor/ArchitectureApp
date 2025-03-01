@@ -30,5 +30,5 @@ sealed class NavigationCommand {
 
     data class ToDeepLink(val deepLink: String) : NavigationCommand()
     data class LoadingDialog(val isShow: Boolean) : NavigationCommand()
-    object Back : NavigationCommand()
+    data object Back : NavigationCommand()
 }

@@ -40,9 +40,9 @@ fun FeedPage(
     viewModel: MoviesViewModel,
     sharedViewModel: NavigationBarSharedViewModel,
 ) {
-    val moviesPaging = viewModel.feedMovies.collectAsLazyPagingItems()
+    val moviesPaging = viewModel.movieFeed.collectAsLazyPagingItems()
     val uiState by viewModel.uiFeedMovieState.collectAsState()
-    val pullToRefreshState = rememberPullRefreshState(uiState.showLoading, { viewModel.onFeedMovieRefresh() })
+    val pullToRefreshState = rememberPullRefreshState(uiState.showLoading, { viewModel.onRefresh() })
     val lazyGridState = rememberLazyGridState()
 
     viewModel.navigationFeedMovieState.collectAsEffect { navigationState ->
@@ -50,18 +50,18 @@ fun FeedPage(
             is MovieDetails -> mainRouter.navigateToMovieDetails(navigationState.movieId)
         }
     }
-    viewModel.refreshFeedMovieListState.collectAsEffect {
+    viewModel.refreshTrigger.collectAsEffect {
         moviesPaging.refresh()
     }
 
-    sharedViewModel.bottomItem.collectAsEffect {
+    sharedViewModel.selectedBottomItem.collectAsEffect {
         if (it.page == Page.Feed) {
             lazyGridState.animateScrollToItem(0)
         }
     }
 
     LaunchedEffect(key1 = moviesPaging.loadState) {
-        viewModel.onFeedMovieLoadStateUpdate(moviesPaging.loadState)
+        viewModel.onLoadStateChanged(moviesPaging.loadState)
     }
 
     PullToRefresh(state = pullToRefreshState, refresh = uiState.showLoading) {
@@ -69,7 +69,7 @@ fun FeedPage(
             movies = moviesPaging,
             uiState = uiState,
             lazyGridState = lazyGridState,
-            onMovieClick = viewModel::onFeedMovieClicked
+            onMovieClick = viewModel::onMovieClicked
         )
     }
 }

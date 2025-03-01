@@ -9,45 +9,65 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-
+import java.util.concurrent.TimeUnit
 
 /**
+ * Worker responsible for synchronizing movie data.
+ *
  * @author Sunil
  * @version 1.0
  * @since 2025-02-16
  */
 @HiltWorker
-class SyncWork @AssistedInject constructor(
+class SyncMoviesWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted params: WorkerParameters,
     private val movieRepository: MovieRepository,
     private val dispatchers: DispatchersProvider,
 ) : CoroutineWorker(appContext, params) {
 
-
     override suspend fun doWork(): Result = withContext(dispatchers.io) {
-        return@withContext if (movieRepository.sync()) {
-            Timber.tag(TAG).d("SyncWork: doWork() called -> success")
-            Result.success()
-        } else {
-            val lastAttempt = runAttemptCount >= SYNC_WORK_MAX_ATTEMPTS
-            if (lastAttempt) {
-                Timber.tag(TAG).d("SyncWork: doWork() called -> failure")
-                Result.failure()
+        Timber.tag(TAG).d("SyncMoviesWorker: Starting movie synchronization.")
+        return@withContext try {
+            if (movieRepository.syncMovies()) {
+                Timber.tag(TAG).d("SyncMoviesWorker: Movie synchronization successful.")
+                Result.success()
             } else {
-                Timber.tag(TAG).d("SyncWork: doWork() called -> retry")
-                Result.retry()
+                handleSyncFailure()
             }
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "SyncMoviesWorker: An unexpected error occurred during synchronization.")
+            handleSyncFailure()
+        }
+    }
+
+    private fun handleSyncFailure(): Result {
+        return if (runAttemptCount < MAX_SYNC_ATTEMPTS) {
+            Timber.tag(TAG).w("SyncMoviesWorker: Movie synchronization failed. Retrying (attempt $runAttemptCount/$MAX_SYNC_ATTEMPTS).")
+            Result.retry()
+        } else {
+            Timber.tag(TAG).e("SyncMoviesWorker: Movie synchronization failed after $MAX_SYNC_ATTEMPTS attempts.")
+            Result.failure()
         }
     }
 
     companion object {
+        private const val TAG = "SyncMoviesWorker"
+        private const val MAX_SYNC_ATTEMPTS =3
+        private const val INITIAL_BACKOFF_DELAY_SECONDS = 10L
 
-        private const val TAG = "SyncWork"
-        private const val SYNC_WORK_MAX_ATTEMPTS = 3
-
-        fun getOneTimeWorkRequest() = OneTimeWorkRequestBuilder<SyncWork>()
-            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
-            .build()
+        fun getSyncMoviesWorkRequest(): OneTimeWorkRequest =
+            OneTimeWorkRequestBuilder<SyncMoviesWorker>()
+                .setConstraints(
+                    Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build()
+                )
+                .setBackoffCriteria(
+                    BackoffPolicy.EXPONENTIAL,
+                    INITIAL_BACKOFF_DELAY_SECONDS,
+                    TimeUnit.SECONDS
+                )
+                .build()
     }
 }

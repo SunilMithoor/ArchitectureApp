@@ -7,13 +7,23 @@ import com.sunil.app.domain.repository.restful.RestfulRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-
+/**
+ * Data manager responsible for handling data operations related tothe RESTful API.
+ *
+ * This class acts as an intermediary between the presentation layer (e.g., ViewModels)
+ * and the data layer (RestfulRepository). It encapsulates the logic for fetching
+ * data and potentially applying business rules or transformations.
+ */
 class RestfulDataManager @Inject constructor(
     private val restfulRepository: RestfulRepository,
-) : RestfulRepository {
+) : RestfulRepository { // 1. Introduce an interface
 
+    /**
+     * Fetches all data from the RESTful API.
+     *
+     * @return A Flow emitting IOTaskResult, which can be eithera success with
+     *         GetAllDataResponse or an error.
+     */
     override suspend fun fetchAllData(): Flow<IOTaskResult<GetAllDataResponse>> =
         restfulRepository.fetchAllData()
-
-
 }

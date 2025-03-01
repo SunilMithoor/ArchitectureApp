@@ -18,6 +18,10 @@ import java.util.Locale
 
 /**
  * Utility class for building a custom User-Agent string.
+ *
+ * @author Sunil
+ * @version 1.0
+ * @since 2025-01-28
  */
 object UserAgentBuilder {
 

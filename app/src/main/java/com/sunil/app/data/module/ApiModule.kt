@@ -26,45 +26,94 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 
+/**
+ * ApiModule: Provides dependencies related to network communication using Retrofit and OkHttp.
+ *
+ * This module configures and provides instances of Retrofit, OkHttpClient, Gson, and other
+ * network-related components for dependency injection.
+ *
+ * @author Sunil
+ * @version 1.0
+ * @since 2025-01-28
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object ApiModule {
 
     private const val TAG = "ApiModule"
-    private const val CLIENT_TIME_OUT = 30L // Use Long for consistency and clarity
+    private const val CLIENT_TIME_OUT_SECONDS = 30L // Timeout for network requests in seconds
 
+    // --- Retrofit Instances ---
+
+    /**
+     * Provides a Retrofit instance configured for the first base URL.
+     *
+     * @param okHttpClient The OkHttpClient instance to use for network requests.
+     * @param gson The Gson instance to use for JSON serialization/deserialization.* @return A Retrofit instance for the first base URL.
+     */
     @Provides
     @Singleton
     @AppBaseUrl1
-    fun provideRetrofitAppBaseUrl1(@Client client: OkHttpClient): Retrofit {
-        Timber.tag(TAG).d("Building Retrofit for App Base URL 1")
-        return createRetrofit(BuildConfig.BASE_URL_1, client)
+    fun provideRetrofitAppBaseUrl1(@Client okHttpClient: OkHttpClient, gson: Gson): Retrofit {
+        return createRetrofit(BuildConfig.BASE_URL_1, okHttpClient, gson)
     }
 
+    /**
+     * Provides a Retrofit instance configured for the second base URL.
+     *
+     * @param okHttpClient The OkHttpClient instance to use for network requests.
+     * @param gson The Gson instance to use for JSON serialization/deserialization.
+     * @return A Retrofit instance for the second base URL.
+     */
     @Provides
     @Singleton
     @AppBaseUrl2
-    fun provideRetrofitAppBaseUrl2(@Client client: OkHttpClient): Retrofit {
-        Timber.tag(TAG).d("Building Retrofit for App Base URL 2")
-        return createRetrofit(BuildConfig.BASE_URL_2, client)
+    fun provideRetrofitAppBaseUrl2(@Client okHttpClient: OkHttpClient, gson: Gson): Retrofit {
+        return createRetrofit(BuildConfig.BASE_URL_2, okHttpClient, gson)
     }
 
+    /**
+     * Provides a Retrofit instance configured for the third base URL.
+     *
+     * @param okHttpClient The OkHttpClient instance to use for network requests.
+     * @param gson The Gson instance to use for JSON serialization/deserialization.
+     * @return A Retrofit instance for the third base URL.
+     */
     @Provides
     @Singleton
     @AppBaseUrl3
-    fun provideRetrofitAppBaseUrl3(@Client client: OkHttpClient): Retrofit {
-        Timber.tag(TAG).d("Building Retrofit for App Base URL 3")
-        return createRetrofit(BuildConfig.BASE_URL_3, client)
+    fun provideRetrofitAppBaseUrl3(@Client okHttpClient: OkHttpClient, gson: Gson): Retrofit {
+        return createRetrofit(BuildConfig.BASE_URL_3, okHttpClient, gson)
     }
 
-    private fun createRetrofit(baseUrl: String, client: OkHttpClient): Retrofit {
+    /**
+     * Creates a Retrofit instance with the specified base URL, OkHttpClient, and Gson.
+     *
+     * @param baseUrl The base URL for the Retrofit instance.
+     * @param okHttpClient The OkHttpClient instance to use for network requests.
+     * @param gson The Gson instance to use for JSON serialization/deserialization.
+     * @return A configured Retrofit instance.
+     */
+    private fun createRetrofit(baseUrl: String, okHttpClient: OkHttpClient, gson: Gson): Retrofit {
+        Timber.tag(TAG).d("Building Retrofit for: $baseUrl")
         return Retrofit.Builder()
             .baseUrl(baseUrl)
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create(gson)) // Use provided Gson instance
             .build()
     }
 
+    // --- OkHttpClient ---
+
+    /**
+     * Provides an OkHttpClient instance with configured interceptors and timeouts.
+     *
+     * @param context The application context.
+     * @param loggingInterceptor The HttpLoggingInterceptor for logging network requests.
+     * @param chuckerInterceptor The ChuckerInterceptor for inspecting network traffic.
+     * @param appSharedPreferences The AppSharedPreferences instance for storing and retrieving data.
+     * @return A configured OkHttpClient instance.
+     */
     @Provides
     @Singleton
     @Client
@@ -75,58 +124,91 @@ object ApiModule {
         appSharedPreferences: AppSharedPreferences
     ): OkHttpClient {
         val builder = OkHttpClient.Builder()
-            .connectTimeout(CLIENT_TIME_OUT, TimeUnit.SECONDS)
-            .readTimeout(CLIENT_TIME_OUT, TimeUnit.SECONDS)
-            .addInterceptor(UserAgentInterceptor(appSharedPreferences, context))
-            .authenticator(TokenAuthenticator(appSharedPreferences, context))
+            .connectTimeout(CLIENT_TIME_OUT_SECONDS, TimeUnit.SECONDS) // Set connection timeout
+            .readTimeout(CLIENT_TIME_OUT_SECONDS, TimeUnit.SECONDS) // Set read timeout
+            .addInterceptor(
+                UserAgentInterceptor(
+                    appSharedPreferences,
+                    context
+                )
+            ) // Add User-Agent interceptor
+            .authenticator(
+                TokenAuthenticator(
+                    appSharedPreferences,
+                    context
+                )
+            ) // Add token authenticator
+
         if (BuildConfig.DEBUG) {
-            builder.addInterceptor(chuckerInterceptor)
-            builder.addInterceptor(loggingInterceptor)
+            builder.addInterceptor(chuckerInterceptor) // Add Chucker interceptor in debug mode
+            builder.addInterceptor(loggingInterceptor) // Add logging interceptor in debug mode
         }
+
         return builder.build()
     }
 
+    // --- Interceptors ---
+
+    /**
+     * Provides an HttpLoggingInterceptor for logging network requests and responses.
+     *
+     * @return A configured HttpLoggingInterceptor instance.
+     */
     @Provides
     @Singleton
     fun provideLoggingInterceptor(): HttpLoggingInterceptor {
         Timber.tag(TAG).d("Providing Logging Interceptor")
         return HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            level = HttpLoggingInterceptor.Level.BODY // Log request and response bodies
         }
     }
 
+    /**
+     * Provides a ChuckerInterceptor for inspecting network traffic.
+     *
+     * @param context The application context.
+     * @return A configured ChuckerInterceptor instance.
+     */
     @Provides
     @Singleton
-    fun provideChuckerInterceptor(
-        @ApplicationContext context: Context,
-    ): ChuckerInterceptor {
+    fun provideChuckerInterceptor(@ApplicationContext context: Context): ChuckerInterceptor {
         Timber.tag(TAG).d("Providing Chucker Interceptor")
         val chuckerCollector = ChuckerCollector(
             context = context,
-            showNotification = true,
-            retentionPeriod = RetentionManager.Period.ONE_HOUR
+            showNotification = true, // Show notification when Chucker is recording
+            retentionPeriod = RetentionManager.Period.ONE_HOUR // Retain data for one hour
         )
         return ChuckerInterceptor.Builder(context)
             .collector(chuckerCollector)
-            .maxContentLength(250_000L) // Use underscore for readability
-            .alwaysReadResponseBody(true)
+            .maxContentLength(Long.MAX_VALUE) // Capture larger responses
+            .alwaysReadResponseBody(true) // Always read the response body
             .build()
     }
 
+
+    // --- Gson ---
+
+    /**
+     * Provides a Gson instance for JSON serialization and deserialization.
+     *
+     * @return A Gson instance.
+     */
     @Provides
     @Singleton
     fun provideGson(): Gson {
+        Timber.tag(TAG).d("Providing Gson")
         return Gson()
     }
 
 
-    @Provides
-    @Singleton
-    fun provideContext(): ApplicationContext {
-        return ApplicationContext()
-    }
+    // --- API Services ---
 
-
+    /**
+     * Provides an ApiAppBaseUrl1Service instance for interacting with the first API.
+     *
+     * @param retrofit The Retrofit instance configured for the first base URL.
+     * @return An ApiAppBaseUrl1Service instance.
+     */
     @Provides
     @Singleton
     fun provideApiAppBaseUrl1Service(@AppBaseUrl1 retrofit: Retrofit): ApiAppBaseUrl1Service {
@@ -134,12 +216,25 @@ object ApiModule {
         return retrofit.create(ApiAppBaseUrl1Service::class.java)
     }
 
+    /**
+     * Provides an ApiAppBaseUrl2Service instance for interacting with the second API.
+     *
+     * @param retrofit The Retrofit instance configured for the second base URL.
+     * @return An ApiAppBaseUrl2Service instance.
+     */
     @Provides
     @Singleton
     fun provideApiAppBaseUrl2Service(@AppBaseUrl2 retrofit: Retrofit): ApiAppBaseUrl2Service {
         Timber.tag(TAG).d("Providing ApiAppBaseUrl2Service")
         return retrofit.create(ApiAppBaseUrl2Service::class.java)
     }
+
+    /**
+     * Provides an ApiAppBaseUrl3Service instance for interacting with the third API.
+     *
+     * @param retrofit The Retrofit instance configured for the third base URL.
+     * @return An ApiAppBaseUrl3Service instance.
+     */
 
     @Provides
     @Singleton

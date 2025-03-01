@@ -5,50 +5,96 @@ import androidx.paging.insertSeparators
 import com.sunil.app.presentation.entity.movies.MovieListItem
 import javax.inject.Inject
 
+
 /**
+ * Use case to insert separators into a PagingData stream of MovieListItem.Movie.
+ *
+ * This class is responsible for adding separators (headers, footers, or category separators)
+ * to a list of movies based on specific criteria.
+ *
  * @author Sunil
  * @version 1.0
  * @since 2025-01-28
  */
 class InsertSeparatorIntoPagingData @Inject constructor() {
-    fun insert(pagingData: PagingData<MovieListItem.Movie>): PagingData<MovieListItem> {
-        return pagingData.insertSeparators { before: MovieListItem.Movie?, after: MovieListItem.Movie? ->
+
+    /**
+     * Inserts separators into the given PagingData of MovieListItem.Movie.
+     *
+     * @param moviePagingData The PagingData of MovieListItem.Movie to insert separators into.
+     * @return A new PagingData with separators inserted.
+     */fun insert(moviePagingData: PagingData<MovieListItem.Movie>): PagingData<MovieListItem> {
+        return moviePagingData.insertSeparators { before: MovieListItem.Movie?, after: MovieListItem.Movie? ->
             when {
                 isListEmpty(before, after) -> null
-                isHeader(before) -> insertHeaderItem(after)
-                isFooter(after) -> insertFooterItem()
-                isDifferentCategory(before, after) -> insertSeparatorItem(after)
+                isFirstItem(before) -> createHeaderItem(after)
+                isLastItem(after) -> createFooterItem()
+                hasDifferentCategory(before, after) -> createCategorySeparator(after)
                 else -> null
             }
         }
     }
 
-    private fun isListEmpty(before: MovieListItem.Movie?, after: MovieListItem.Movie?): Boolean = before == null && after == null
 
-    private fun isHeader(before: MovieListItem.Movie?): Boolean = before == null
+    /**
+     * Checks if the list is empty (both before and after are null).
+     *
+     * @param before The item before the potential separator.
+     * @param after The item after the potential separator.
+     * @return True if the list is empty, false otherwise.
+     */
+    private fun isListEmpty(before: MovieListItem.Movie?, after: MovieListItem.Movie?): Boolean =
+        before == null && after == null
 
-    private fun isFooter(after: MovieListItem.Movie?): Boolean = after == null
+    /**
+     * Checks if the current item is the first item in the list (before is null).
+     ** @param before The item before the potential separator.
+     * @return True if it's the first item, false otherwise.
+     */
+    private fun isFirstItem(before: MovieListItem.Movie?): Boolean = before == null
 
-    private fun isDifferentCategory(before: MovieListItem.Movie?, after: MovieListItem.Movie?): Boolean =
+    /**
+     * Checks if the current item is the last item in the list (after is null).
+     *
+     * @param after The item after the potential separator.
+     * @return True if it's the last item, false otherwise.
+     */
+    private fun isLastItem(after: MovieListItem.Movie?): Boolean = after == null
+
+    /**
+     * Checks if the before and after items belong to different categories.
+     *
+     * @param before The item before the potential separator.
+     * @param after The item after the potential separator.
+     * @return True if the categories are different, false otherwise.
+     */
+    private fun hasDifferentCategory(before: MovieListItem.Movie?, after: MovieListItem.Movie?): Boolean =
         before?.category != after?.category
 
     /**
-     * Insert Header; return null to skip adding a header.
-     * **/
-    private fun insertHeaderItem(after: MovieListItem.Movie?): MovieListItem? = createSeparator(after)
+     * Creates a header item for the list.
+     *
+     * @param after The item after the potential header.
+     * @return A MovieListItem.Separator representing the header, or null if no header is needed.
+     */
+    private fun createHeaderItem(after: MovieListItem.Movie?): MovieListItem.Separator? =
+        after?.let { MovieListItem.Separator("Header: ${it.category}") } // Example: Add "Header:" prefix
 
     /**
-     * Insert Footer; return null to skip adding a footer.
-     * **/
-    @Suppress("FunctionOnlyReturningConstant")
-    private fun insertFooterItem(): MovieListItem? = null
+     * Creates a footer item for the list.
+     *
+     * In this example, we are not adding a footer.
+     *
+     * @return A MovieListItem.Separator representing the footer, or null if no footer is needed.
+     */
+    private fun createFooterItem(): MovieListItem.Separator? = null
 
     /**
-     * Insert a separator between two items that start with different date.
-     * **/
-    private fun insertSeparatorItem(after: MovieListItem.Movie?): MovieListItem.Separator? = createSeparator(after)
-
-    private fun createSeparator(item: MovieListItem.Movie?) = item?.let {
-        MovieListItem.Separator(it.category)
-    }
+     * Creates a category separator item.
+     *
+     * @param after The item after the potential separator.
+     * @return A MovieListItem.Separator representing the category separator, or null if no separator is needed.
+     */
+    private fun createCategorySeparator(after: MovieListItem.Movie?): MovieListItem.Separator? =
+        after?.let { MovieListItem.Separator("Category: ${it.category}") }
 }

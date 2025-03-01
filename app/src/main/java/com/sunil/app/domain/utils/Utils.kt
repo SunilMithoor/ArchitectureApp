@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.map
 /**
  * Util method that takes a suspend function returning a [Flow] of [IOTaskResult] as input param and returns a
  * [Flow] of [ViewState], which emits [ViewState.Loading] with true prior to performing the IO Task. If the
- * IO operation results a [IOTaskResult.OnSuccess], the result is mapped to a [ViewState.RenderSuccess] instance and emitted,
- * else a [IOTaskResult.OnFailed] is mapped to a [ViewState.RenderFailure] instance and emitted.
+ * IO operation results a [IOTaskResult.Success], the result is mapped to a [ViewState.Success] instance and emitted,
+ * else a [IOTaskResult.Failure] is mapped to a [ViewState.Failure] instance and emitted.
  * The flowable is then completed by emitting a [ViewState.Loading] with false
  */
 
@@ -21,8 +21,8 @@ suspend fun <T : Any> getViewStateFlowForNetworkCall(ioOperation: suspend () -> 
         emit(ViewState.Loading(true))
         ioOperation().map {
             when (it) {
-                is IOTaskResult.OnSuccess -> ViewState.RenderSuccess(it.data)
-                is IOTaskResult.OnFailed -> ViewState.RenderFailure(it.throwable)
+                is IOTaskResult.Success -> ViewState.Success(it.data)
+                is IOTaskResult.Failure -> ViewState.Failure(it.throwable)
             }
         }.collect {
             emit(it)

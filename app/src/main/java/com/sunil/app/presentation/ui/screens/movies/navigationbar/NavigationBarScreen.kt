@@ -86,10 +86,9 @@ private fun NavigationBarScreenPreview() = PreviewContainer {
     val navController = rememberNavController()
     val mainRouter = MainRouter(navController)
     val darkTheme = isSystemInDarkTheme()
-    val codeSnippet= CodeSnippet(LocalContext.current)
 
     NavigationBarScreen(
-        sharedViewModel = NavigationBarSharedViewModel(codeSnippet),
+        sharedViewModel = NavigationBarSharedViewModel(),
         mainRouter = mainRouter,
         darkMode = darkTheme,
         onThemeUpdated = { },

@@ -10,6 +10,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 
+/**
+ * Use case for fetching all data from a RESTful API.
+ *
+ * This class encapsulates the logic for retrieving all data, abstracting the data source
+ * and providing a clean interface for the presentation layer.
+ */
 @Singleton
 class GetAllDataUseCase @Inject constructor(private val restfulDataManager: RestfulDataManager) :
     IUseCaseFlow<None, GetAllDataResponse> {

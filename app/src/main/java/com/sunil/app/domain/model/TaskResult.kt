@@ -5,58 +5,111 @@ import com.sunil.app.domain.model.Result.Error
 import com.sunil.app.domain.model.Result.Success
 
 
+/**
+ * Represents the result of an I/O task, either successful with dataor failed with an exception.
+ *
+ * @param DTO The type of data returned on success.
+ */
 sealed class IOTaskResult<out DTO : Any> {
-    data class OnSuccess<out DTO : Any>(val data: DTO) : IOTaskResult<DTO>()
-    data class OnFailed(val throwable: Throwable) : IOTaskResult<Nothing>()
+    /**
+     * Represents a successful I/O operation.
+     *
+     * @param data The data returned by the operation.
+     */
+    data class Success<out DTO : Any>(val data: DTO) : IOTaskResult<DTO>()
+
+    /**
+     * Represents a failed I/O operation.
+     *
+     * @param throwable The exception that caused the failure.
+     */
+    data class Failure(val throwable: Throwable) : IOTaskResult<Nothing>()
 }
 
 
 /**
- * Lets the UI act on a controlled bound of states that can be defined here
- * @author Sunil
- * @since 1.0
+ * Represents the state of the UI, allowing for a controlled set of states.
+ *
+ * @param T The type of data associated with the success state.
  */
 sealed class ViewState<out T : Any> {
 
     /**
-     * Represents UI state where the UI should be showing a loading UX to the user
-     * @param isLoading will be true when the loading UX needs to display, false when not
+     * Represents the UI state when an operation is in progress.
+     *
+     * @param isLoading True if the loading indicator should be shown, false otherwise.
      */
     data class Loading(val isLoading: Boolean) : ViewState<Nothing>()
 
     /**
-     * Represents the UI state where the operation requested by the UI has been completed successfully
-     * and the output of type [T] as asked by the UI has been provided to it
-     * @param output result object of [T] type representing the fruit of the successful operation
+     * Represents the UI state when an operation has completed successfully.
+     *
+     * @param data The data returned by the successful operation.
      */
-    data class RenderSuccess<out T : Any>(val output: T) : ViewState<T>()
+    data class Success<out T : Any>(val data: T) : ViewState<T>()
 
     /**
-     * Represents the UI state where the operation requested by the UI has failed to complete
-     * either due to a IO issue or a service exception and the same is conveyed back to the UI
-     * to be shown the user
-     * @param throwable [Throwable] instance containing the root cause of the failure in a [String]
+     * Represents the UI state when an operation has failed.
+     *
+     * @param throwable The exception that caused the failure.
      */
-    data class RenderFailure(val throwable: Throwable) : ViewState<Nothing>()
+    data class Failure(val throwable: Throwable) : ViewState<Nothing>()
 }
 
+/**
+ * Represents the result of an operation, either successful with data or failed with an error.
+ *
+ * @param T The type of data returned on success.
+ */
+sealed class Result<out T> {
+    /**
+     * Represents a successful operation.
+     *
+     * @param data The data returned by the operation.*/
+    data class Success<out T>(val data: T) : Result<T>()
 
-sealed class Result<T> {
-    data class Success<T>(val data: T) : Result<T>()
-    data class Error<T>(val error: Throwable) : Result<T>()
+    /**
+     * Represents a failed operation.
+     *
+     * @param error The exception that caused the failure.
+     */
+    data class Error(val error: Throwable) : Result<Nothing>()
 }
 
+/**
+ * Executes the given [block] if the [Result] is a [Success].
+ *
+ * @param block The function to execute with the data.
+ * @return The original [Result].
+ */
 inline fun <T> Result<T>.onSuccess(
     block: (T) -> Unit
 ): Result<T> = if (this is Success) also { block(data) } else this
 
+/**
+ * Executes the given [block] if the [Result] is an [Error].
+ *
+ * @param block The function to execute with the error.
+ * @return The original [Result].
+ */
 inline fun <T> Result<T>.onError(
     block: (Throwable) -> Unit
 ): Result<T> = if (this is Error) also { block(error) } else this
 
-fun <T> Result<T>.asSuccessOrNull(): T? = (this as? Success)?.data
+/**
+ * Returns the data if the [Result] is a [Success], otherwise returns null.
+ *
+ * @return The data or null.
+ */
+fun <T> Result<T>.getOrNull(): T? = (this as? Success)?.data
 
-inline fun <A, T> Result<T>.map(transform: (T) -> A): Result<A> {
+/**
+ * Transforms the data in a [Success] [Result] using the given [transform] function.
+ *
+ * @param transform The function to transform the data.
+ * @return A new [Result] with the transformed data or the original [Error].
+ */
+inline fun <T, A> Result<T>.map(transform: (T) -> A): Result<A> {
     return when (this) {
         is Success -> Success(transform(data))
         is Error -> Error(error)

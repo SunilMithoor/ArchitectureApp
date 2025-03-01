@@ -10,6 +10,15 @@ import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * A utility class for checking network connectivity.
+ *
+ * @property context
+ *
+ * @author Sunil
+ * @version 1.0
+ * @since 2025-01-28
+ */
 @Singleton
 class NetworkHandler @Inject constructor(@ApplicationContext private val context: Context) {
 

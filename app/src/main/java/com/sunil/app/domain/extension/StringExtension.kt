@@ -3,114 +3,208 @@
 package com.sunil.app.domain.extension
 
 import android.text.Editable
+import android.text.SpannableStringBuilder
 import android.util.Patterns
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import com.sunil.app.data.utils.NetworkHandler
 import java.util.Locale
+import javax.inject.Inject
 
 
-object G {
-    val gson = GsonBuilder()
+/**
+ *  Utility functions for string manipulation and JSON conversion.
+ */
+
+object JsonUtils {
+    private val gson: Gson = GsonBuilder()
         .disableHtmlEscaping()
         .setPrettyPrinting()
         .create()
+
+    /**
+     * Returns the Gson instance.
+     *
+     * @return The Gson instance.
+     */
+    fun getGsonInstance(): Gson {
+        return gson
+    }
 }
 
 /**
- * Converts string to integer safely otherwise returns zero
+ * Converts a string to an integer safely, returning a default value if the conversion fails.
+ *
+ * @param default The default value to return if the string is not a valid integer.
+ * @return The integer representation of the string, or the default value if the conversion fails.
  */
-fun String.asInt(): Int = toInt().or(-1)
+fun String.toIntOrDefault(default: Int = -1): Int = toIntOrNull() ?: default
 
-fun String.asBoolean(): Boolean = toBoolean().or(false)
+/**
+ * Converts a string to a boolean safely, returning a default value if the conversion fails.
+ *
+ * @param default The default value to return if the string is not a valid boolean ("true" or "false").
+ * @return The boolean representation of the string, or the default value if the conversion fails.
+ */
+fun String.toBooleanOrDefault(default: Boolean = false): Boolean =
+    toBooleanStrictOrNull() ?: default
 
+
+/**
+ * Checks if an integer is negative.
+ */
 val Int.isNegative get() = this < 0
 
+/**
+ * Converts a boolean to an integer (1 for true, 0 for false).
+ */
 val Boolean.intValue get() = if (this) 1 else 0
 
-fun String.toCamelCase(): String {
-    var titleText = ""
-    if (this.isNotEmpty()) {
-        val words = this.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        words.filterNot { it.isEmpty() }
-            .map {
-                it.substring(0, 1).upperCase(Locale.getDefault()) + it.substring(1)
-                    .lowerCase(Locale.getDefault())
-            }
-            .forEach { titleText += "$it " }
-    }
-    return titleText.trim { it <= ' ' }
+/**
+ * Converts a string to title case (e.g., "hello world" becomes "Hello World").
+ *
+ * @return The string in title case.
+ */
+fun String.toTitleCase(): String = trim().split("\\s+".toRegex())
+    .filter { it.isNotEmpty() }
+    .joinToString(" ") { it ->
+        it.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+        .lowercase(Locale.getDefault()) }
+
+/**
+ * Executes a lambda if the string is not null and not empty.
+ *
+ * @param string The lambda to execute if the string is not null and not empty.
+ */
+fun String?.ifNotEmpty(string: String.() -> Unit) {
+    this?.takeIf { it.isNotEmpty() }?.also(string)
 }
 
-fun String?.isNotEmptyOrNull(string: String.() -> Unit) {
-    this?.let {
-        if (it.isNotEmpty()) {
-            string()
-        }
-    }
-}
+/**
+ * Checks if a string contains any letters.
+ */
+val String.hasLetters get() = any { it.isLetter() }
 
-val String.containsLetters get() = matches(".*[a-zA-Z].*".toRegex())
+/**
+ * Checks if a string contains any numbers.
+ */
+val String.hasNumbers get() = any { it.isDigit() }
 
-val String.containsNumbers get() = matches(".*[0-9].*".toRegex())
+/**
+ * Checks if a string is a valid password (at least 8 characters, contains letters and numbers).
+ */
+val String.isValidPassword get() = length >= 8 && hasLetters && hasNumbers
 
-val String.isAlphanumeric get() = matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$".toRegex())
+/**
+ * Checks if a string contains only letters.
+ */
+val String.isAlphabetic get() = all { it.isLetter() }
 
-val String.isAlphabetic get() = matches("^[a-zA-Z]*$".toRegex())
-
+/**
+ * Checks if a string is a valid email address.
+ *
+ * @return True if the string is a valid email address, false otherwise.
+ */
 fun String.isEmail(): Boolean = Patterns.EMAIL_ADDRESS.matcher(this).matches()
 
+/**
+ * Checks if a string is a valid URL.
+ *
+ * @return True if the string is a valid URL, false otherwise.
+ */
 fun String.isUrl(): Boolean = Patterns.WEB_URL.matcher(this).matches()
 
+/**
+ * Joins a variable number of parameters into a single string.
+ *
+ * @param params The parameters to join.
+ * @return The joined string.
+ */
 fun join(vararg params: Any?) = params.joinToString()
 
-fun Any.toJson(): String = try {
-    G.gson.toJson(this)
-} catch (e: Exception) {
-    e.printStackTrace()
-    ""
-}
+/**
+ * Converts an object to a JSON string.
+ *
+ * @return The JSON string representation of the object, or null if an error occurs.
+ */
+fun Any.toJsonString(): String? = runCatching {
+    JsonUtils.getGsonInstance().toJson(this)
+}.getOrNull()
 
-inline fun <reified T : Any> String?.fromJson() = G.gson.fromJson<T>(this, T::class.java)
+/**
+ * Converts a JSON string to an object of type T.
+ *
+ * @return The object of type T, or null if the conversion fails.
+ */
+inline fun <reified T : Any> String?.fromJsonString(): T? = runCatching {
+    JsonUtils.getGsonInstance().fromJson(this, T::class.java)
+}.getOrNull()
 
-fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
+/**
+ * Converts a string to an Editable.
+ *
+ * @return The Editable representation of the string.
+ */
+fun String.toEditable(): Editable = SpannableStringBuilder(this)
 
-fun Int.times(predicate: (Int) -> Unit) = repeat(this, predicate)
+/**
+ * Repeats an action a specified number of times.
+ *
+ * @param predicate The action to repeat.
+ */
+fun Int.repeatAction(predicate: (Int) -> Unit) = repeat(this, predicate)
 
-val String.isJson: Boolean
-    get() {
-        this.trim { it <= ' ' }
-        if (this.startsWith("{")) {
-            return true
-        }
-        if (this.startsWith("[")) {
-            return true
-        }
-        return false
-    }
+/**
+ * Checks if a string is a valid JSON string (starts with '{' or '[').
+ */
+val String.isJsonString: Boolean
+    get() = trim().let { it.isNotBlank() && (it.startsWith("{") || it.startsWith("[")) }
 
+/**
+ * Converts a JSON string to an object of type T, using a TypeToken to handle generic types.
+ *
+ * @return The object of type T, or null if the conversion fails.
+ */
 fun <T> String?.fromTypedJson(): T? {
-    val type = object : TypeToken<T>() {
-
-    }.type
-    return try {
-        G.gson.fromJson<T>(this, type)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
-    }
+    val type = object : TypeToken<T>() {}.type
+    return runCatching {
+        JsonUtils.getGsonInstance().fromJson<T>(this, type)
+    }.getOrNull()
 }
 
-fun <T> Any?.toTypedJson(): String {
-    val type = object : TypeToken<T>() {
+/**
+ * Converts an object to a JSON string, using a TypeToken to handle generic types.
+ *
+ * @return The JSON string representation of the object.
+ */
+fun <T> Any?.toTypedJson(): String? = runCatching {
+    val type = object : TypeToken<T>() {}.type
+    JsonUtils.getGsonInstance().toJson(this, type)
+}.getOrNull()
 
-    }.type
-    return G.gson.toJson(this, type)
-}
+/**
+ * Creates a deep copy of an object using JSON serialization anddeserialization.
+ *
+ * @return A deep copy of the object.
+ */
+inline fun <reified T> T.deepCopy(): T? = runCatching {
+    val stringProject = JsonUtils.getGsonInstance().toJson(this, T::class.java)
+    JsonUtils.getGsonInstance().fromJson(stringProject, T::class.java)
+}.getOrNull()
 
-inline fun <reified T> T.deepCopy(): T {
-    val stringProject = G.gson.toJson(this, T::class.java)
-    return G.gson.fromJson(stringProject, T::class.java)
-}
-
+/**
+ * Converts a string to uppercase using the specified locale.
+ *
+ * @param locale The locale to use for the conversion.
+ * @return The uppercase string.
+ */
 fun String.upperCase(locale: Locale = Locale.getDefault()) = uppercase(locale)
+
+/**
+ * Converts a string to lowercase using the specified locale.
+ *
+ * @param locale The locale to use for the conversion.
+ * @return The lowercase string.
+ */
 fun String.lowerCase(locale: Locale = Locale.getDefault()) = lowercase(locale)

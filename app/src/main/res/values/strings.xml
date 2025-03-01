@@ -3,6 +3,7 @@
     <string name="internet_too_slow">Sorry! Internet connection is too slow…</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="success">Success</string>
+    <string name="failure">Failure</string>
 
     <string name="bottom_navigation_bar_actions">Bottom navigation bar with Having actions </string>
     <string name="navigation_item_home">Home</string>

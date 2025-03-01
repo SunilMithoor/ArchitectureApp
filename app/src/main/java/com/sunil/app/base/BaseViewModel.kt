@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * Base ViewModel for managing common UI state and handling exceptions.
@@ -17,11 +18,14 @@ import timber.log.Timber
  * @version 1.0
  * @since 2025-02-28
  */
-abstract class BaseViewModel(protected val codeSnippet: CodeSnippet) : ViewModel() {
+abstract class BaseViewModel() : ViewModel() {
 
     companion object {
         private const val TAG = "BaseViewModel" // Log tag for debugging
     }
+
+    @Inject
+    lateinit var codeSnippet: CodeSnippet
 
     /** Holds UI messages as a state flow */
     val _message = MutableStateFlow("")

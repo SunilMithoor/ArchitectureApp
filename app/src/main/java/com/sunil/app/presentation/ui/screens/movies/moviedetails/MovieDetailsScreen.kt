@@ -51,7 +51,7 @@ fun MovieDetailsPage(
     mainNavController: NavHostController,
     viewModel: MoviesViewModel,
 ) {
-    val state by viewModel.uiState.collectAsState()
+    val state by viewModel.uiMovieDetailsState.collectAsState()
     MovieDetailsScreen(state, viewModel::onFavoriteMovieClicked, mainNavController)
 }
 

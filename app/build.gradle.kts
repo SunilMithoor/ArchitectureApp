@@ -9,7 +9,6 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.serialization)
-//    kotlin("kapt")
 }
 
 
@@ -58,7 +57,7 @@ android {
         buildConfig = true
 //        viewBinding = true
         compose = true
-        dataBinding = true
+//        dataBinding = true
     }
 
     // Load keystore properties
@@ -171,7 +170,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
 //    implementation(libs.material)
     implementation(libs.hilt.android)
-    implementation(libs.hilt.android.compiler)
+//    implementation(libs.hilt.android.compiler)
 //    implementation(libs.hilt.compiler)
     implementation(libs.hilt.work)
     implementation(libs.timber)
@@ -196,7 +195,7 @@ dependencies {
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
-    implementation(libs.databinding.runtime)
+//    implementation(libs.databinding.runtime)
 //    implementation(libs.compose.material3)
     implementation(libs.androidx.material3.android)
     implementation(libs.compose.material)
@@ -222,7 +221,7 @@ dependencies {
 
     //ksp
     ksp(libs.room.compiler)
-    ksp(libs.hilt.android.compiler)
+//    ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compiler)
 
     //annotation

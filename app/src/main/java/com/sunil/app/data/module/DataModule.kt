@@ -1,5 +1,6 @@
 package com.sunil.app.data.module
 
+import android.content.Context
 import com.sunil.app.data.local.db.dao.movies.FavoriteMovieDao
 import com.sunil.app.data.local.db.dao.movies.MovieDao
 import com.sunil.app.data.local.db.dao.movies.MovieRemoteKeyDao
@@ -10,9 +11,12 @@ import com.sunil.app.data.remote.retrofit.datasource.movies.MovieDataSource
 import com.sunil.app.data.remote.retrofit.datasource.movies.MovieLocalDataSource
 import com.sunil.app.data.remote.retrofit.datasource.movies.MovieRemoteDataSource
 import com.sunil.app.data.remote.retrofit.datasource.movies.MovieRemoteMediator
+import com.sunil.app.data.utils.NetworkMonitorImpl
+import com.sunil.app.domain.utils.NetworkMonitor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -86,4 +90,15 @@ class DataModule {
         return FavoriteMoviesLocalDataSource(favoriteMovieDao)
     }
 
+
+    /**
+     * Provides the network monitor
+     *
+     * @param context
+     * @return An instance of NetworkMonitor.
+     */
+    @Provides
+    fun provideNetworkMonitor(
+        @ApplicationContext context: Context
+    ): NetworkMonitor = NetworkMonitorImpl(context)
 }

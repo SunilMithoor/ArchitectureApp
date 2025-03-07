@@ -20,6 +20,7 @@ import com.sunil.app.domain.usecase.movies.GetMovieDetailsUseCase
 import com.sunil.app.domain.usecase.movies.GetMoviesWithSeparatorsUseCase
 import com.sunil.app.domain.usecase.movies.RemoveMovieFromFavoriteUseCase
 import com.sunil.app.domain.usecase.movies.SearchMoviesUseCase
+import com.sunil.app.domain.utils.NetworkMonitor
 import com.sunil.app.presentation.entity.movies.MovieListItem
 import com.sunil.app.presentation.mapper.movies.toMovieListItem
 import com.sunil.app.presentation.ui.screens.movies.favourites.FavoriteUiState
@@ -47,6 +48,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -74,6 +76,7 @@ class MoviesViewModel @Inject constructor(
     private val getMoviesWithSeparatorsUseCase: GetMoviesWithSeparatorsUseCase,
     private val movieDetailsBundle: MovieDetailsBundle,
     private val savedStateHandle: SavedStateHandle,
+    private val networkMonitor: NetworkMonitor,
 ) : BaseViewModel() {
 
     companion object {
@@ -111,7 +114,7 @@ class MoviesViewModel @Inject constructor(
      * Flow of favorite movies, represented as PagingData.
      */
     val favouriteMovies: Flow<PagingData<MovieListItem>> =
-        getFavoriteMoviesUseCase(DEFAULT_PAGE_SIZE)
+        getFavoriteMoviesUseCase.invoke(DEFAULT_PAGE_SIZE)
             .map { pagingData ->
                 pagingData.map { it.toMovieListItem() }
             }
@@ -247,8 +250,10 @@ class MoviesViewModel @Inject constructor(
     /**
      * SharedFlow for navigation events from the feed screen.
      */
-    private val _navigationFeedMovieState: MutableSharedFlow<FeedNavigationState> = singleSharedFlow()
-    val navigationFeedMovieState: SharedFlow<FeedNavigationState> = _navigationFeedMovieState.asSharedFlow()
+    private val _navigationFeedMovieState: MutableSharedFlow<FeedNavigationState> =
+        singleSharedFlow()
+    val navigationFeedMovieState: SharedFlow<FeedNavigationState> =
+        _navigationFeedMovieState.asSharedFlow()
 
     /**
      * SharedFlow used to trigger a refresh of the movie list.
@@ -260,13 +265,13 @@ class MoviesViewModel @Inject constructor(
      * Observes changes in network connectivity and triggers a refresh if necessary.
      */
     private fun observeNetworkStatus() {
-//        networkMonitor.networkState
-//            .onEach { networkState ->
-//                if (networkState.shouldRefresh && networkState.isConnected) {
-//                    onRefresh()
-//                }
-//            }
-//            .launchIn(viewModelScope)
+        networkMonitor.networkState
+            .onEach { networkState ->
+                if (networkState.shouldRefresh && networkState.isOnline) {
+                    onRefresh()
+                }
+            }
+            .launchIn(coroutineScope)
     }
 
     /**
@@ -365,7 +370,7 @@ class MoviesViewModel @Inject constructor(
             }
             result.onSuccess { isFavorite ->
                 // Toggle the favorite status
-                val favoriteResult = if (isFavorite) {
+                if (isFavorite) {
                     removeMovieFromFavoriteUseCase.invoke(movieId)
                 } else {
                     addMovieToFavoritesUseCase.invoke(movieId)

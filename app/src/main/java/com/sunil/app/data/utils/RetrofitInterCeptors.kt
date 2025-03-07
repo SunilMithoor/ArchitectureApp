@@ -12,6 +12,7 @@ import com.sunil.app.data.utils.Constants.USER_TOKEN
 import com.sunil.app.data.utils.UserAgentBuilder.buildUserAgent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.*
+import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.IOException
 import timber.log.Timber
 import javax.inject.Inject
@@ -29,6 +30,7 @@ import javax.inject.Inject
  */
 class UserAgentInterceptor @Inject constructor(
     private val appSharedPreferences: AppSharedPreferences,
+    private val networkHandler: NetworkHandler,
     @ApplicationContext private val context: Context
 ) : Interceptor {
 
@@ -58,6 +60,19 @@ class UserAgentInterceptor @Inject constructor(
      * @return The [Response] after adding the headers.
      */
     override fun intercept(chain: Interceptor.Chain): Response {
+        if (!networkHandler.isOnline()) {
+            // No network connection, show a toast and return a dummy response
+            showToast("No internet connection. Please check your network.")
+
+            return Response.Builder()
+                .request(chain.request())
+                .protocol(Protocol.HTTP_1_1)
+                .code(503) // 503 Service Unavailable
+                .message("No Internet Connection")
+                .body("".toResponseBody(null))
+                .build()
+        }
+
         val originalRequest = chain.request()
         val requestBuilder = originalRequest.newBuilder()
 
@@ -110,12 +125,26 @@ class UserAgentInterceptor @Inject constructor(
 
         return chain.proceed(requestBuilder.build())
     }
+
+
+
+    /**
+     * Shows a toast message on the main thread.
+     *
+     * @param message The message to be shown in the toast.
+     */
+    private fun showToast(message: String) {
+        // Ensure toast is shown on the main thread
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    }
 }
 
 /**
  * Authenticator to handle unauthorized (401) responses.
  *
- * This authenticator logs out the userand stops further request attempts when a 401 response is received.
+ * This authenticator logs out the user and stops further request attempts when a 401 response is received.
  */
 class TokenAuthenticator @Inject constructor(
     private val appSharedPreferences: AppSharedPreferences,

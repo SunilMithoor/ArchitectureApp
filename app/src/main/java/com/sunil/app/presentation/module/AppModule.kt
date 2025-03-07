@@ -3,7 +3,7 @@ package com.sunil.app.presentation.module
 import android.content.Context
 import androidx.work.WorkManager
 import com.sunil.app.data.utils.DiskExecutor
-import com.sunil.app.presentation.util.CodeSnippet
+import com.sunil.app.presentation.util.ResourceProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,15 +45,15 @@ object AppModule {
         WorkManager.getInstance(context)
 
     /**
-     * Provides a singleton instance of [CodeSnippet].
+     * Provides a singleton instance of [ResourceProvider].
      *
-     * [CodeSnippet] is a utility class that likely provides helper functions for the presentation layer.
+     * [ResourceProvider] is a utility class that likely provides helper functions for the presentation layer.
      *
      * @param context The application context.
-     * @return A singleton instance of [CodeSnippet].
+     * @return A singleton instance of [ResourceProvider].
      */
     @Singleton
     @Provides
-    fun provideCodeSnippet(@ApplicationContext context: Context): CodeSnippet =
-        CodeSnippet(context)
+    fun provideResourceProvider(@ApplicationContext context: Context): ResourceProvider =
+        ResourceProvider(context)
 }

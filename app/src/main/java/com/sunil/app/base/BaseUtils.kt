@@ -6,6 +6,7 @@ import android.os.Build
 import com.sunil.app.BuildConfig
 import timber.log.Timber
 
+
 private const val TAG = "AppUtils"
 
 /**

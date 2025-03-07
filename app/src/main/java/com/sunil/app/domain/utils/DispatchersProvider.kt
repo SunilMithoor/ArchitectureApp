@@ -31,7 +31,7 @@ interface DispatchersProvider {
     /**
      * Dispatcher for CPU-intensive tasks.
      *
-     * Use this dispatcher for tasksthat involve heavy computation,
+     * Use this dispatcher for tasks that involve heavy computation,
      * such as data processing or complex algorithms.
      */
     val default: CoroutineDispatcher

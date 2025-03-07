@@ -4,26 +4,6 @@ import com.sunil.app.domain.entity.movies.MovieEntity
 import com.sunil.app.presentation.entity.movies.MovieListItem
 
 
-
-/**
- * Mapper functions to transform MovieEntity (domain layer) to MovieListItem (presentation layer).
- *
- * @author Sunil
- * @version 1.0
- * @since 2025-02-16
- */
-
-/**
- * Converts a MovieEntity to a MovieListItem.Movie.
- *
- * @receiver The MovieEntity to convert.
- * @return A MovieListItem.Movie instance representing the converted MovieEntity.
- */
-
-/**
-
- */
-
 /**
  * Mapper functions to transform MovieEntity (domain layer) to MovieListItem (presentation layer).
  *
@@ -43,8 +23,6 @@ fun MovieEntity.toPresentation() = MovieListItem.Movie(
     imageUrl = imageUrl,
     category = category
 )
-
-
 
 
 /**

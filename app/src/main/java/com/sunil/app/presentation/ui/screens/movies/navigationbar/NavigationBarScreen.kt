@@ -11,20 +11,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.sunil.app.presentation.extension.AppColor
 import com.sunil.app.presentation.navigation.route
 import com.sunil.app.presentation.ui.screens.main.MainRouter
 import com.sunil.app.presentation.ui.theme.AppColor.GrayB3
 import com.sunil.app.presentation.ui.util.preview.PreviewContainer
 import com.sunil.app.presentation.ui.widget.BottomNavigationBar
 import com.sunil.app.presentation.ui.widget.TopBar
-import com.sunil.app.presentation.util.CodeSnippet
 
 import com.sunil.app.presentation.viewmodel.movies.NavigationBarSharedViewModel
 

@@ -6,5 +6,5 @@ data class FeedUiState(
 )
 
 sealed class FeedNavigationState {
-    data class MovieDetails(val movieId: Int) : FeedNavigationState()
+    data class MovieDetails(val movieId: Int = -1) : FeedNavigationState()
 }

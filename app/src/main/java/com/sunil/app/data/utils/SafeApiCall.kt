@@ -19,7 +19,7 @@ import kotlin.coroutines.cancellation.CancellationException
  * @since 2025-01-28
  */
 suspend fun <T> safeApiCall(apiCall: suspend () -> T): Result<T> = try {
-    Result.Success(apiCall.invoke()) // Invoke the API call and wrap theresult in Result.Success
+    Result.Success(apiCall.invoke()) // Invoke the API call and wrap the result in Result.Success
 } catch (e: Exception) {
     if (e is CancellationException) {
         throw e // Re-throw CancellationException to allow coroutine cancellation

@@ -8,7 +8,7 @@ import com.sunil.app.domain.model.Result
 /**
  * Interface defining the contract for movie-related data operations.
  *
- * This repository provides methods to fetch, search, and manage moviedata,
+ * This repository provides methods to fetch, search, and manage movie data,
  * including support for pagination and favorite movie management.
  *
  * @author Sunil

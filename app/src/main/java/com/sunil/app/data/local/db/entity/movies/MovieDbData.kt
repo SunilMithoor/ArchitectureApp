@@ -10,7 +10,7 @@ import com.sunil.app.domain.entity.movies.MovieEntity
  * Represents a movie entity in the local database.
  *
  * @property id The unique identifier of the movie.
- * @property description A brief description of themovie.
+ * @property description A brief description of the movie.
  * @property imageUrl The URL of the movie's poster image.
  * @property backgroundImageUrl The URL of the movie's background image.
  * @property title The title of the movie.

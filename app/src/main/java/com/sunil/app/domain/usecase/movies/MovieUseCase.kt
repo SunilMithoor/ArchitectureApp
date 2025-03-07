@@ -75,6 +75,13 @@ class GetMovieDetailsUseCase @Inject constructor(
      */
     suspend operator fun invoke(movieId: Int): Result<MovieEntity> =
         moviesDataManager.getMovie(movieId)
+
+//    suspend operator fun invoke(movieId: Int): Result<MovieEntity> {
+//        if (movieId <= 0) {
+//            return Result.Error(IllegalArgumentException("Invalid movieId: Must be greater than 0"))
+//        }
+//        return moviesDataManager.getMovie(movieId)
+//    }
 }
 
 /**

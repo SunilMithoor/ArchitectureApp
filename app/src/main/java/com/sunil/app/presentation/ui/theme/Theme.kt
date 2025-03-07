@@ -142,7 +142,6 @@ enum class ColorPallet {
     PURPLE, GREEN, ORANGE, BLUE, WALLPAPER
 }
 
-lateinit var colors: ColorScheme
 
 @Composable
 fun AppTheme(
@@ -150,12 +149,7 @@ fun AppTheme(
     content: @Composable () -> Unit
 ) {
     val systemUiController = rememberSystemUiController()
-
-    colors = if (darkTheme) {
-        darkColors
-    } else {
-        lightColors
-    }
+    val colors = if (darkTheme) darkColors else lightColors
 
     systemUiController.setStatusBarColor(color = colors.primary)
 

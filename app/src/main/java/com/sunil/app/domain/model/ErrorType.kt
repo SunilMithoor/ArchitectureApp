@@ -6,7 +6,7 @@ import java.io.IOException
 /**
  * Represents different types of errors that can occur in the application.
  *
- * This sealed class provides a type-safe way to handle variouserror scenarios.
+ * This sealed class provides a type-safe way to handle various error scenarios.
  */
 sealed class ErrorType : IOException() {
 

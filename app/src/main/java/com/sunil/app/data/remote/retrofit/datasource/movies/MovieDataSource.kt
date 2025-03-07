@@ -21,7 +21,7 @@ import com.sunil.app.domain.model.Result
 interface MovieDataSource {
 
     /**
-     * Interface for remotemovie data operations.
+     * Interface for remote movie data operations.
      */
     interface Remote {
         /**

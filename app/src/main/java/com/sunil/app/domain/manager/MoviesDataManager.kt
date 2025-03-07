@@ -10,7 +10,7 @@ import com.sunil.app.domain.model.Result
 
 
 /**
- * [MoviesDataManager] isresponsible for managing movie-related data operations.
+ * [MoviesDataManager] is responsible for managing movie-related data operations.
  * It acts as an intermediary between the presentation layer and the [MovieRepository],
  * providing a clean interface for accessing and manipulating movie data.
  */
@@ -48,7 +48,7 @@ class MoviesDataManager @Inject constructor(
     /**
      * Retrieves a specific movie by its ID.
      *
-     * @param movieId The ID of themovie to retrieve.
+     * @param movieId The ID of the movie to retrieve.
      * @return A [Result] containing the [MovieEntity] or an error.
      */
     override suspend fun getMovie(movieId: Int): Result<MovieEntity> =

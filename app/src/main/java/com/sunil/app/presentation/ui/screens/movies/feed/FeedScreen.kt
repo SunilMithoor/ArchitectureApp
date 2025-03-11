@@ -40,7 +40,7 @@ fun FeedPage(
     viewModel: MoviesViewModel,
     sharedViewModel: NavigationBarSharedViewModel,
 ) {
-    val moviesPaging = viewModel.movieFeed.collectAsLazyPagingItems()
+    val moviesPaging = viewModel.movieFeed?.collectAsLazyPagingItems()
     val uiState by viewModel.uiFeedMovieState.collectAsState()
     val pullToRefreshState =
         rememberPullRefreshState(uiState.showLoading, { viewModel.onRefresh() })
@@ -52,7 +52,7 @@ fun FeedPage(
         }
     }
     viewModel.refreshTrigger.collectAsEffect {
-        moviesPaging.refresh()
+        moviesPaging?.refresh()
     }
 
     sharedViewModel.selectedBottomItem.collectAsEffect {
@@ -61,8 +61,8 @@ fun FeedPage(
         }
     }
 
-    LaunchedEffect(key1 = moviesPaging.loadState) {
-        viewModel.onLoadStateChanged(moviesPaging.loadState)
+    LaunchedEffect(key1 = moviesPaging?.loadState) {
+        moviesPaging?.let { viewModel.onLoadStateChanged(it.loadState) }
     }
 
     PullToRefresh(state = pullToRefreshState, refresh = uiState.showLoading) {
@@ -78,7 +78,7 @@ fun FeedPage(
 
 @Composable
 private fun FeedScreen(
-    movies: LazyPagingItems<MovieListItem>,
+    movies: LazyPagingItems<MovieListItem>?,
     uiState: FeedUiState,
     lazyGridState: LazyGridState,
     onMovieClick: (movieId: Int) -> Unit

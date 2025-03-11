@@ -105,8 +105,7 @@ class RestfulViewModel @Inject constructor(
                 }
                 // Show the error message in a snackbar
                 _message.value = dataState.throwable.message
-                    ?: resourceProvider.getString(AppString.failure)
-                            ?: "Unknown error"
+                    ?: resourceProvider.getString(AppString.failure) ?: "Unknown error"
             }
 
             is ViewState.Success -> {

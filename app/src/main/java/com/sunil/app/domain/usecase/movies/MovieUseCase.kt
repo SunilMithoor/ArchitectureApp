@@ -9,6 +9,7 @@ import com.sunil.app.presentation.entity.movies.MovieListItem
 import com.sunil.app.presentation.mapper.movies.toPresentation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,7 +24,15 @@ class AddMovieToFavoritesUseCase @Inject constructor(
      * Adds a movie to the user's favorites.
      *
      * @param movieId The ID of the movie to add.
-     */suspend operator fun invoke(movieId: Int) = moviesDataManager.addMovieToFavorites(movieId)
+     */
+    suspend operator fun invoke(movieId: Int) {
+        if (movieId <= 0) {
+            Timber.tag("AddMovieToFavoritesUseCase").d("Invalid movieId: Must be greater than 0")
+            return
+        }
+        return moviesDataManager.addMovieToFavorites(movieId)
+    }
+
 }
 
 /**
@@ -39,8 +48,13 @@ class CheckFavoriteStatusUseCase @Inject constructor(
      * @param movieId The ID of the movie to check.
      * @return A [Result] indicating whether the movie is a favorite.
      */
-    suspend operator fun invoke(movieId: Int): Result<Boolean> =
-        moviesDataManager.isMovieFavorite(movieId)
+    suspend operator fun invoke(movieId: Int): Result<Boolean> {
+        if (movieId <= 0) {
+            Timber.tag("GetFavoriteMoviesUseCase").d("Invalid movieId: Must be greater than 0")
+            return Result.Error(IllegalArgumentException("Invalid movieId: Must be greater than 0"))
+        }
+        return moviesDataManager.isMovieFavorite(movieId)
+    }
 }
 
 /**
@@ -56,8 +70,13 @@ class GetFavoriteMoviesUseCase @Inject constructor(
      * @param pageSize The number of movies to retrieve per page.
      * @return A [Flow] of [PagingData] containing the favorite movies.
      */
-    operator fun invoke(pageSize: Int): Flow<PagingData<MovieEntity>> =
-        moviesDataManager.getFavoriteMovies(pageSize)
+    operator fun invoke(pageSize: Int): Flow<PagingData<MovieEntity>>? {
+        if (pageSize <= 0) {
+            Timber.tag("GetFavoriteMoviesUseCase").d("Invalid pageSize: Must be greater than 0")
+            return null
+        }
+        return moviesDataManager.getFavoriteMovies(pageSize)
+    }
 }
 
 /**
@@ -73,15 +92,17 @@ class GetMovieDetailsUseCase @Inject constructor(
      * @param movieId The ID of the movie to retrieve.
      * @return A [Result] containing the movie details.
      */
-    suspend operator fun invoke(movieId: Int): Result<MovieEntity> =
-        moviesDataManager.getMovie(movieId)
+//    suspend operator fun invoke(movieId: Int): Result<MovieEntity> =
+//        moviesDataManager.getMovie(movieId)
 
-//    suspend operator fun invoke(movieId: Int): Result<MovieEntity> {
-//        if (movieId <= 0) {
-//            return Result.Error(IllegalArgumentException("Invalid movieId: Must be greater than 0"))
-//        }
-//        return moviesDataManager.getMovie(movieId)
-//    }
+    suspend operator fun invoke(movieId: Int): Result<MovieEntity> {
+        if (movieId <= 0) {
+            Timber.tag("GetMovieDetailsUseCase")
+                .d("Invalid movieId: Must be greater than 0")
+            return Result.Error(IllegalArgumentException("Invalid movieId: Must be greater than 0"))
+        }
+        return moviesDataManager.getMovie(movieId)
+    }
 }
 
 /**
@@ -96,7 +117,15 @@ class RemoveMovieFromFavoriteUseCase @Inject constructor(
      *
      * @param movieId The ID of the movie to remove.
      */
-    suspend operator fun invoke(movieId: Int) = moviesDataManager.removeMovieFromFavorites(movieId)
+    suspend operator fun invoke(movieId: Int) {
+        if (movieId <= 0) {
+            Timber.tag("RemoveMovieFromFavoriteUseCase")
+                .d("Invalid movieId: Must be greater than 0")
+            return
+        }
+        return moviesDataManager.removeMovieFromFavorites(movieId)
+    }
+
 }
 
 /**
@@ -113,8 +142,18 @@ class SearchMoviesUseCase @Inject constructor(
      * @param pageSize The number of movies to retrieve per page.
      * @return A [Flow] of [PagingData] containing the search results.
      */
-    operator fun invoke(query: String, pageSize: Int): Flow<PagingData<MovieEntity>> =
-        moviesDataManager.searchMovies(query, pageSize)
+    operator fun invoke(query: String, pageSize: Int): Flow<PagingData<MovieEntity>>? {
+        if (query.isEmpty()) {
+            Timber.tag("SearchMoviesUseCase").d("Invalid query: Search query is empty")
+            return null
+        }
+        if (pageSize <= 0) {
+            Timber.tag("SearchMoviesUseCase").d("Invalid pageSize: Must be greater than 0")
+            return null
+        }
+        return moviesDataManager.searchMovies(query, pageSize)
+    }
+
 }
 
 /**
@@ -131,11 +170,17 @@ class GetMoviesWithSeparatorsUseCase @Inject constructor(
      * @param pageSize The number of movies to retrieve per page.
      * @return A [Flow] of [PagingData] containing the movies with separators.
      */
-    fun invoke(pageSize: Int): Flow<PagingData<MovieListItem>> =
-        moviesDataManager.getMovies(pageSize).map { moviePagingData ->
+    fun invoke(pageSize: Int): Flow<PagingData<MovieListItem>>? {
+        if (pageSize <= 0) {
+            Timber.tag("GetMoviesWithSeparatorsUseCase")
+                .d("Invalid pageSize: Must be greater than 0")
+            return null
+        }
+        return moviesDataManager.getMovies(pageSize)?.map { moviePagingData ->
             moviePagingData.map { movieEntity -> movieEntity.toPresentation() }
                 .let { movieListItemPagingData ->
                     insertSeparatorIntoPagingData.insert(movieListItemPagingData)
                 }
         }
+    }
 }

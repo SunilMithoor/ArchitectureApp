@@ -32,8 +32,12 @@ fun FavoritesPage(
     viewModel: MoviesViewModel,
 ) {
     val uiState by viewModel.uiFavouriteMovieState.collectAsState()
-    val movies = viewModel.favouriteMovies.collectAsLazyPagingItems()
-    viewModel.onFavouriteMovieLoadStateUpdate(movies.loadState, movies.itemCount)
+    val movies = viewModel.favouriteMovies?.collectAsLazyPagingItems()
+    movies?.loadState?.let { movies?.itemCount?.let { it1 ->
+        viewModel.onFavouriteMovieLoadStateUpdate(it,
+            it1
+        )
+    } }
 
     viewModel.navigationFavouriteMovieState.collectAsEffect { navigationState ->
         when (navigationState) {
@@ -51,7 +55,7 @@ fun FavoritesPage(
 @Composable
 fun FavoritesScreen(
     favoriteUiState: FavoriteUiState,
-    movies: LazyPagingItems<MovieListItem>,
+    movies: LazyPagingItems<MovieListItem>?,
     onMovieClick: (movieId: Int) -> Unit
 ) {
     Surface {

@@ -51,7 +51,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun MovieList(
-    movies: LazyPagingItems<MovieListItem>,
+    movies: LazyPagingItems<MovieListItem>?,
     onMovieClick: (id: Int) -> Unit,
     lazyGridState: LazyGridState = rememberLazyGridState(),
     config: MovieSpanSizeConfig = MovieSpanSizeConfig(3),
@@ -62,32 +62,34 @@ fun MovieList(
         columns = GridCells.Fixed(config.gridSpanSize),
         state = lazyGridState
     ) {
-        items(movies.itemCount, span = { index ->
-            val spinSize = when (movies[index]) {
-                is MovieListItem.Movie -> config.movieColumnSpanSize
-                is MovieListItem.Separator -> config.separatorColumnSpanSize
-                null -> config.footerColumnSpanSize
-            }
-            GridItemSpan(spinSize)
-        }) { index ->
-
-            val itemVisible by remember {
-                derivedStateOf {
-                    val visibleItems = lazyGridState.layoutInfo.visibleItemsInfo
-                    visibleItems.any { it.index == index }
+        movies?.itemCount?.let {
+            items(it, span = { index ->
+                val spinSize = when (movies[index]) {
+                    is MovieListItem.Movie -> config.movieColumnSpanSize
+                    is MovieListItem.Separator -> config.separatorColumnSpanSize
+                    null -> config.footerColumnSpanSize
                 }
-            }
+                GridItemSpan(spinSize)
+            }) { index ->
 
-            when (val movie = movies[index]) {
-                is MovieListItem.Movie -> MovieItem(
-                    movie = movie,
-                    imageSize = imageSize,
-                    onMovieClick = onMovieClick,
-                    itemVisible = itemVisible
-                )
+                val itemVisible by remember {
+                    derivedStateOf {
+                        val visibleItems = lazyGridState.layoutInfo.visibleItemsInfo
+                        visibleItems.any { it.index == index }
+                    }
+                }
 
-                is MovieListItem.Separator -> Separator(movie.category)
-                else -> Loader()
+                when (val movie = movies[index]) {
+                    is MovieListItem.Movie -> MovieItem(
+                        movie = movie,
+                        imageSize = imageSize,
+                        onMovieClick = onMovieClick,
+                        itemVisible = itemVisible
+                    )
+
+                    is MovieListItem.Separator -> Separator(movie.category)
+                    else -> Loader()
+                }
             }
         }
     }

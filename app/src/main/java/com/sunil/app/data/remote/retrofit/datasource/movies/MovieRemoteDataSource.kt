@@ -26,8 +26,16 @@ class MovieRemoteDataSource @Inject constructor( // Added @Inject for dependency
      * @param limit The number of movies per page.
      * @return A [Result]containing a list of [MovieData] or an error.
      */
-    override suspend fun getMovies(page: Int, limit: Int): Result<List<MovieData>> = safeApiCall {
-        apiAppBaseUrl3Service.getMoviesSortedByCategoryAndId(page, limit)
+    override suspend fun getMovies(page: Int, limit: Int): Result<List<MovieData>> {
+        if (page <= 0) {
+            return Result.Error(IllegalArgumentException("Invalid page: Must be greater than 0"))
+        }
+        if (limit <= 0) {
+            return Result.Error(IllegalArgumentException("Invalid limit: Must be greater than 0"))
+        }
+        return safeApiCall {
+            apiAppBaseUrl3Service.getMoviesSortedByCategoryAndId(page, limit)
+        }
     }
 
     /**
@@ -36,10 +44,15 @@ class MovieRemoteDataSource @Inject constructor( // Added @Inject for dependency
      * @param movieIds The list of movie IDs to retrieve.
      * @return A [Result] containing a list of [MovieData] or an error.
      */
-    override suspend fun getMoviesByIds(movieIds: List<Int>): Result<List<MovieData>> =
-        safeApiCall {
+    override suspend fun getMoviesByIds(movieIds: List<Int>): Result<List<MovieData>> {
+        if (movieIds.isEmpty()) {
+            return Result.Error(IllegalArgumentException("Invalid movieIds: Must be greater than 0"))
+        }
+        return safeApiCall {
             apiAppBaseUrl3Service.getMoviesByIds(movieIds)
         }
+    }
+
 
     /**
      * Retrieves a single movie by its ID.
@@ -47,8 +60,13 @@ class MovieRemoteDataSource @Inject constructor( // Added @Inject for dependency
      * @param movieId The ID of the movie to retrieve.
      * @return A [Result] containing a [MovieData] or an error.
      */
-    override suspend fun getMovieById(movieId: Int): Result<MovieData> = safeApiCall {
-        apiAppBaseUrl3Service.getMovieById(movieId)
+    override suspend fun getMovieById(movieId: Int): Result<MovieData> {
+        if (movieId <= 0) {
+            return Result.Error(IllegalArgumentException("Invalid movieId: Must be greater than 0"))
+        }
+        return safeApiCall {
+            apiAppBaseUrl3Service.getMovieById(movieId)
+        }
     }
 
     /**
@@ -63,7 +81,18 @@ class MovieRemoteDataSource @Inject constructor( // Added @Inject for dependency
         query: String,
         page: Int,
         limit: Int
-    ): Result<List<MovieData>> = safeApiCall {
-        apiAppBaseUrl3Service.searchMovies(query, page, limit)
+    ): Result<List<MovieData>> {
+        if (query.isEmpty()) {
+            return Result.Error(IllegalArgumentException("Invalid query: Search query is empty"))
+        }
+        if (page <= 0) {
+            return Result.Error(IllegalArgumentException("Invalid page: Must be greater than 0"))
+        }
+        if (limit <= 0) {
+            return Result.Error(IllegalArgumentException("Invalid limit: Must be greater than 0"))
+        }
+        return safeApiCall {
+            apiAppBaseUrl3Service.searchMovies(query, page, limit)
+        }
     }
 }

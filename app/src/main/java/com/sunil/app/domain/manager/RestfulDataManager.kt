@@ -16,7 +16,7 @@ import javax.inject.Inject
  */
 class RestfulDataManager @Inject constructor(
     private val restfulRepository: RestfulRepository,
-) : RestfulRepository { // 1. Introduce an interface
+) : RestfulRepository {
 
     /**
      * Fetches all data from the RESTful API.

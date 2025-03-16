@@ -3,14 +3,14 @@ package com.sunil.app.domain.manager
 
 import androidx.paging.PagingData
 import com.sunil.app.domain.entity.movies.MovieEntity
+import com.sunil.app.domain.model.Result
 import com.sunil.app.domain.repository.movies.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
-import com.sunil.app.domain.model.Result
 
 
 /**
- * [MoviesDataManager] isresponsible for managing movie-related data operations.
+ * [MoviesDataManager] is responsible for managing movie-related data operations.
  * It acts as an intermediary between the presentation layer and the [MovieRepository],
  * providing a clean interface for accessing and manipulating movie data.
  */
@@ -23,8 +23,14 @@ class MoviesDataManager @Inject constructor(
      *
      * @param pageSize The number of movies to include in each page.
      * @return A [Flow] emitting [PagingData] of [MovieEntity].
-     */override fun getMovies(pageSize: Int): Flow<PagingData<MovieEntity>> =
-        movieRepository.getMovies(pageSize)
+     */
+    override fun getMovies(pageSize: Int): Flow<PagingData<MovieEntity>>? {
+        if (pageSize <= 0) {
+            return null
+        }
+        return movieRepository.getMovies(pageSize)
+    }
+
 
     /**
      * Retrieves a paginated flow of favorite movies.
@@ -32,8 +38,13 @@ class MoviesDataManager @Inject constructor(
      * @param pageSize The number of movies to include in each page.
      * @return A [Flow] emitting [PagingData] of [MovieEntity].
      */
-    override fun getFavoriteMovies(pageSize: Int): Flow<PagingData<MovieEntity>> =
-        movieRepository.getFavoriteMovies(pageSize)
+    override fun getFavoriteMovies(pageSize: Int): Flow<PagingData<MovieEntity>>? {
+        if (pageSize <= 0) {
+            return null
+        }
+        return movieRepository.getFavoriteMovies(pageSize)
+    }
+
 
     /**
      * Searches for movies based on a query.
@@ -42,17 +53,29 @@ class MoviesDataManager @Inject constructor(
      * @param pageSize The number of movies to include in each page.
      * @return A [Flow] emitting [PagingData] of [MovieEntity] matching the query.
      */
-    override fun searchMovies(query: String, pageSize: Int): Flow<PagingData<MovieEntity>> =
-        movieRepository.searchMovies(query, pageSize)
+    override fun searchMovies(query: String, pageSize: Int): Flow<PagingData<MovieEntity>>? {
+        if (query.isEmpty()) {
+            return null
+        }
+        if (pageSize <= 0) {
+            return null
+        }
+        return movieRepository.searchMovies(query, pageSize)
+    }
+
 
     /**
      * Retrieves a specific movie by its ID.
      *
-     * @param movieId The ID of themovie to retrieve.
+     * @param movieId The ID of the movie to retrieve.
      * @return A [Result] containing the [MovieEntity] or an error.
      */
-    override suspend fun getMovie(movieId: Int): Result<MovieEntity> =
-        movieRepository.getMovie(movieId)
+    override suspend fun getMovie(movieId: Int): Result<MovieEntity> {
+        if (movieId <= 0) {
+            return Result.Error(IllegalArgumentException("Invalid movieId: Must be greater than 0"))
+        }
+        return movieRepository.getMovie(movieId)
+    }
 
     /**
      * Checks if a movie is marked as a favorite.
@@ -60,8 +83,14 @@ class MoviesDataManager @Inject constructor(
      * @param movieId The ID of the movie to check.
      * @return A [Result] containing a [Boolean] indicating if the movie is a favorite.
      */
-    override suspend fun isMovieFavorite(movieId: Int): Result<Boolean> =
-        movieRepository.isMovieFavorite(movieId)
+    override suspend fun isMovieFavorite(movieId: Int): Result<Boolean> {
+        if (movieId <= 0) {
+            return Result.Error(IllegalArgumentException("Invalid movieId: Must be greater than 0"))
+        }
+        return movieRepository.isMovieFavorite(movieId)
+
+    }
+
 
     /**
      * Adds a movie to the user's favorites.
@@ -69,6 +98,9 @@ class MoviesDataManager @Inject constructor(
      * @param movieId The ID of the movie to add.
      */
     override suspend fun addMovieToFavorites(movieId: Int) {
+        if (movieId <= 0) {
+            return
+        }
         movieRepository.addMovieToFavorites(movieId)
     }
 
@@ -78,6 +110,9 @@ class MoviesDataManager @Inject constructor(
      * @param movieId The ID of the movie to remove.
      */
     override suspend fun removeMovieFromFavorites(movieId: Int) {
+        if (movieId <= 0) {
+            return
+        }
         movieRepository.removeMovieFromFavorites(movieId)
     }
 

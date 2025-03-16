@@ -3,7 +3,7 @@ package com.sunil.app.domain.entity.response
 import com.google.gson.annotations.SerializedName
 
 /**
- *Represents a list of ResponseItem objects.
+ * Represents a list of ResponseItem objects.
  * This class is used to hold the response data from the API.
  */
 class GetAllDataResponse : ArrayList<ResponseItem>()

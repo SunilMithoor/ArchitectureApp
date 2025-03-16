@@ -66,7 +66,7 @@ internal fun ComposeModifiedSnackbarComponent(
                 bottom = when (position) {
                     is ComposeModifiedSnackbarPosition.Top -> 0.dp
                     is ComposeModifiedSnackbarPosition.Bottom -> 0.dp
-                    is ComposeModifiedSnackbarPosition.Float -> 24.dp
+                    is ComposeModifiedSnackbarPosition.Float -> 12.dp
                 }
             ),
         verticalArrangement = when (position) {

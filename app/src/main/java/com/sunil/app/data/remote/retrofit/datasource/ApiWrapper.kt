@@ -107,7 +107,7 @@ abstract class ApiWrapper {
      *
      * @param allowRetries Whether to allow retries in case of failure.
      * @param maxRetries The maximum number of retry attempts.
-     * @param networkApiCall A lambda functionthat performs the network API call.
+     * @param networkApiCall A lambda function that performs the network API call.
      * @return A Flow emitting an IOTaskResult, which can be either OnSuccess or OnFailed.
      */
     protected suspend fun <T : Any> getResult(

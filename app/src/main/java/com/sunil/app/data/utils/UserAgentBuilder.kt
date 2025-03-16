@@ -191,7 +191,7 @@ object UserAgentBuilder {
     }
 
     /**
-     * Retrieves the installerpackage name for the application.
+     * Retrieves the installer package name for the application.
      *
      * This function determines where the app was installed from (e.g., Google Play Store, Amazon Appstore, etc.).
      * It handles the deprecation of `getInstallerPackageName` by using the newer `getInstallSourceInfo` API

@@ -8,7 +8,7 @@ import com.sunil.app.domain.model.Result
 /**
  * Interface defining the contract for movie-related data operations.
  *
- * This repository provides methods to fetch, search, and manage moviedata,
+ * This repository provides methods to fetch, search, and manage movie data,
  * including support for pagination and favorite movie management.
  *
  * @author Sunil
@@ -23,7 +23,7 @@ interface MovieRepository {
      * @param pageSize The number of movies to include in each page.
      * @return A Flow emitting PagingData containing MovieEntity objects.
      */
-    fun getMovies(pageSize: Int): Flow<PagingData<MovieEntity>>
+    fun getMovies(pageSize: Int): Flow<PagingData<MovieEntity>>?
 
     /**
      * Retrieves a paginated list of the user's favorite movies.
@@ -31,7 +31,7 @@ interface MovieRepository {
      * @param pageSize The number of movies to include in each page.
      * @return A Flow emitting PagingData containing MovieEntity objects.
      */
-    fun getFavoriteMovies(pageSize: Int): Flow<PagingData<MovieEntity>>
+    fun getFavoriteMovies(pageSize: Int): Flow<PagingData<MovieEntity>>?
 
     /**
      * Searches for movies based on a query string.
@@ -40,7 +40,7 @@ interface MovieRepository {
      * @param pageSize The number of movies to include in each page.
      * @return A Flow emitting PagingData containing MovieEntity objects.
      */
-    fun searchMovies(query: String, pageSize: Int): Flow<PagingData<MovieEntity>>
+    fun searchMovies(query: String, pageSize: Int): Flow<PagingData<MovieEntity>>?
 
     /**
      * Retrieves a single movie by its ID.

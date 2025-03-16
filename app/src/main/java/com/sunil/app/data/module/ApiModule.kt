@@ -5,11 +5,13 @@ import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.chuckerteam.chucker.api.RetentionManager
 import com.google.gson.Gson
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.sunil.app.BuildConfig
 import com.sunil.app.data.local.sharedprefs.AppSharedPreferences
 import com.sunil.app.data.remote.retrofit.api.ApiAppBaseUrl1Service
 import com.sunil.app.data.remote.retrofit.api.ApiAppBaseUrl2Service
 import com.sunil.app.data.remote.retrofit.api.ApiAppBaseUrl3Service
+import com.sunil.app.data.utils.NetworkHandler
 import com.sunil.app.data.utils.TokenAuthenticator
 import com.sunil.app.data.utils.UserAgentInterceptor
 import dagger.Module
@@ -99,6 +101,7 @@ object ApiModule {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(okHttpClient)
+            .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .addConverterFactory(GsonConverterFactory.create(gson)) // Use provided Gson instance
             .build()
     }
@@ -110,7 +113,7 @@ object ApiModule {
      *
      * @param context The application context.
      * @param loggingInterceptor The HttpLoggingInterceptor for logging network requests.
-     * @param chuckerInterceptor The ChuckerInterceptor for inspecting network traffic.
+     * @param chuckerInterceptor The Chucker Interceptor for inspecting network traffic.
      * @param appSharedPreferences The AppSharedPreferences instance for storing and retrieving data.
      * @return A configured OkHttpClient instance.
      */
@@ -121,7 +124,8 @@ object ApiModule {
         @ApplicationContext context: Context,
         loggingInterceptor: HttpLoggingInterceptor,
         chuckerInterceptor: ChuckerInterceptor,
-        appSharedPreferences: AppSharedPreferences
+        appSharedPreferences: AppSharedPreferences,
+        networkHandler: NetworkHandler
     ): OkHttpClient {
         val builder = OkHttpClient.Builder()
             .connectTimeout(CLIENT_TIME_OUT_SECONDS, TimeUnit.SECONDS) // Set connection timeout
@@ -129,6 +133,7 @@ object ApiModule {
             .addInterceptor(
                 UserAgentInterceptor(
                     appSharedPreferences,
+                    networkHandler,
                     context
                 )
             ) // Add User-Agent interceptor
@@ -159,15 +164,16 @@ object ApiModule {
     fun provideLoggingInterceptor(): HttpLoggingInterceptor {
         Timber.tag(TAG).d("Providing Logging Interceptor")
         return HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY // Log request and response bodies
+//            level = HttpLoggingInterceptor.Level.BODY // Log request and response bodies
+            level = HttpLoggingInterceptor.Level.BASIC // Log request and response bodies
         }
     }
 
     /**
-     * Provides a ChuckerInterceptor for inspecting network traffic.
+     * Provides a Chucker Interceptor for inspecting network traffic.
      *
      * @param context The application context.
-     * @return A configured ChuckerInterceptor instance.
+     * @return A configured Chucker Interceptor instance.
      */
     @Provides
     @Singleton

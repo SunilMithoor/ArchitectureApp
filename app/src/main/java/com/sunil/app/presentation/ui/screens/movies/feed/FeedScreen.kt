@@ -14,17 +14,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.sunil.app.presentation.ui.screens.movies.feed.FeedNavigationState.MovieDetails
-import com.sunil.app.presentation.viewmodel.movies.NavigationBarSharedViewModel
 import com.sunil.app.presentation.entity.movies.MovieListItem
 import com.sunil.app.presentation.navigation.Page
 import com.sunil.app.presentation.ui.screens.main.MainRouter
+import com.sunil.app.presentation.ui.screens.movies.feed.FeedNavigationState.MovieDetails
 import com.sunil.app.presentation.ui.util.collectAsEffect
 import com.sunil.app.presentation.ui.util.preview.PreviewContainer
 import com.sunil.app.presentation.ui.widget.LoaderFullScreen
 import com.sunil.app.presentation.ui.widget.MovieList
 import com.sunil.app.presentation.ui.widget.PullToRefresh
 import com.sunil.app.presentation.viewmodel.movies.MoviesViewModel
+import com.sunil.app.presentation.viewmodel.movies.NavigationBarSharedViewModel
 import kotlinx.coroutines.flow.flowOf
 
 /**
@@ -40,9 +40,10 @@ fun FeedPage(
     viewModel: MoviesViewModel,
     sharedViewModel: NavigationBarSharedViewModel,
 ) {
-    val moviesPaging = viewModel.movieFeed.collectAsLazyPagingItems()
+    val moviesPaging = viewModel.movieFeed?.collectAsLazyPagingItems()
     val uiState by viewModel.uiFeedMovieState.collectAsState()
-    val pullToRefreshState = rememberPullRefreshState(uiState.showLoading, { viewModel.onRefresh() })
+    val pullToRefreshState =
+        rememberPullRefreshState(uiState.showLoading, { viewModel.onRefresh() })
     val lazyGridState = rememberLazyGridState()
 
     viewModel.navigationFeedMovieState.collectAsEffect { navigationState ->
@@ -51,7 +52,7 @@ fun FeedPage(
         }
     }
     viewModel.refreshTrigger.collectAsEffect {
-        moviesPaging.refresh()
+        moviesPaging?.refresh()
     }
 
     sharedViewModel.selectedBottomItem.collectAsEffect {
@@ -60,8 +61,8 @@ fun FeedPage(
         }
     }
 
-    LaunchedEffect(key1 = moviesPaging.loadState) {
-        viewModel.onLoadStateChanged(moviesPaging.loadState)
+    LaunchedEffect(key1 = moviesPaging?.loadState) {
+        moviesPaging?.let { viewModel.onLoadStateChanged(it.loadState) }
     }
 
     PullToRefresh(state = pullToRefreshState, refresh = uiState.showLoading) {
@@ -70,13 +71,14 @@ fun FeedPage(
             uiState = uiState,
             lazyGridState = lazyGridState,
             onMovieClick = viewModel::onMovieClicked
+//            onMovieClick = { movieId -> viewModel.onMovieClicked(movieId) }
         )
     }
 }
 
 @Composable
 private fun FeedScreen(
-    movies: LazyPagingItems<MovieListItem>,
+    movies: LazyPagingItems<MovieListItem>?,
     uiState: FeedUiState,
     lazyGridState: LazyGridState,
     onMovieClick: (movieId: Int) -> Unit

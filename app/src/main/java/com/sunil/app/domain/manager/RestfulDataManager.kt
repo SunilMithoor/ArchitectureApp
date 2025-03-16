@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 /**
- * Data manager responsible for handling data operations related tothe RESTful API.
+ * Data manager responsible for handling data operations related to the RESTful API.
  *
  * This class acts as an intermediary between the presentation layer (e.g., ViewModels)
  * and the data layer (RestfulRepository). It encapsulates the logic for fetching
@@ -16,12 +16,12 @@ import javax.inject.Inject
  */
 class RestfulDataManager @Inject constructor(
     private val restfulRepository: RestfulRepository,
-) : RestfulRepository { // 1. Introduce an interface
+) : RestfulRepository {
 
     /**
      * Fetches all data from the RESTful API.
      *
-     * @return A Flow emitting IOTaskResult, which can be eithera success with
+     * @return A Flow emitting IOTaskResult, which can be either a success with
      *         GetAllDataResponse or an error.
      */
     override suspend fun fetchAllData(): Flow<IOTaskResult<GetAllDataResponse>> =

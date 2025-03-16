@@ -99,14 +99,13 @@ class RestfulViewModel @Inject constructor(
                     currentState.copy(
                         isLoading = false,
                         errorMessage = dataState.throwable.message
-                            ?: codeSnippet.getString(AppString.failure)
+                            ?: resourceProvider.getString(AppString.failure)
                             ?: "Unknown error"
                     )
                 }
                 // Show the error message in a snackbar
                 _message.value = dataState.throwable.message
-                    ?: codeSnippet.getString(AppString.failure)
-                            ?: "Unknown error"
+                    ?: resourceProvider.getString(AppString.failure) ?: "Unknown error"
             }
 
             is ViewState.Success -> {
@@ -119,7 +118,7 @@ class RestfulViewModel @Inject constructor(
                     )
                 }
                 // Show the success message in a snackbar
-                _message.value = codeSnippet.getString(AppString.success) ?: "Success"
+                _message.value = resourceProvider.getString(AppString.success) ?: "Success"
             }
         }
     }

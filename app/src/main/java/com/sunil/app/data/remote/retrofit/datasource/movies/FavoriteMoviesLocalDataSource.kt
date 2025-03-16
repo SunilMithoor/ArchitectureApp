@@ -53,7 +53,7 @@ class FavoriteMoviesLocalDataSource(
     /**
      * Checks if a movie is currently marked as a favorite.
      *
-     * @param movieId The ID of themovie to check.
+     * @param movieId The ID of the movie to check.
      * @return A [Result] containing `true` if the movie is a favorite, `false` otherwise.
      */
     override suspend fun checkFavoriteStatus(movieId: Int): Result<Boolean> {

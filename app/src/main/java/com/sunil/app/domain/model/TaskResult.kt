@@ -6,7 +6,7 @@ import com.sunil.app.domain.model.Result.Success
 
 
 /**
- * Represents the result of an I/O task, either successful with dataor failed with an exception.
+ * Represents the result of an I/O task, either successful with data or failed with an exception.
  *
  * @param DTO The type of data returned on success.
  */

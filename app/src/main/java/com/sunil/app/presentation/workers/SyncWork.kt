@@ -5,6 +5,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.*
 import com.sunil.app.domain.repository.movies.MovieRepository
 import com.sunil.app.domain.utils.DispatchersProvider
+import com.sunil.app.presentation.workers.SyncMoviesWorker.Companion.MAX_SYNC_ATTEMPTS
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.withContext
@@ -55,6 +56,7 @@ class SyncMoviesWorker @AssistedInject constructor(
         private const val TAG = "SyncMoviesWorker"
         private const val MAX_SYNC_ATTEMPTS =3
         private const val INITIAL_BACKOFF_DELAY_SECONDS = 10L
+        const val WORK_NAME = "SyncMoviesWorker"
 
         fun getSyncMoviesWorkRequest(): OneTimeWorkRequest =
             OneTimeWorkRequestBuilder<SyncMoviesWorker>()

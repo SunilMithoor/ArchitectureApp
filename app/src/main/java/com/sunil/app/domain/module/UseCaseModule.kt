@@ -45,7 +45,7 @@ object UseCaseModule {
     /**
      * Provides an instance of [SearchMoviesUseCase].
      *
-     * @param moviesDataManager The [MoviesDataManager] instance to be used bythe UseCase.
+     * @param moviesDataManager The [MoviesDataManager] instance to be used by the UseCase.
      * @return An instance of [SearchMoviesUseCase].
      */
     @Provides

@@ -2,7 +2,7 @@ package com.sunil.app.base
 
 import androidx.lifecycle.ViewModel
 import com.sunil.app.presentation.extension.AppString
-import com.sunil.app.presentation.util.CodeSnippet
+import com.sunil.app.presentation.util.ResourceProvider
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,11 +21,11 @@ import javax.inject.Inject
 abstract class BaseViewModel() : ViewModel() {
 
     companion object {
-        private const val TAG = "BaseViewModel" // Log tag for debugging
+        private const val TAG = "BaseViewModel"
     }
 
     @Inject
-    lateinit var codeSnippet: CodeSnippet
+    lateinit var resourceProvider: ResourceProvider
 
     /** Holds UI messages as a state flow */
     val _message = MutableStateFlow("")
@@ -38,7 +38,7 @@ abstract class BaseViewModel() : ViewModel() {
     /** Exception handler for coroutine errors */
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         Timber.tag(TAG).e(throwable) // Log the error
-        _message.value = codeSnippet.getString(AppString.internet_too_slow) // Update UI message
+        _message.value = resourceProvider.getString(AppString.internet_too_slow) // Update UI message
     }
 
     /** Coroutine scope with an exception handler */

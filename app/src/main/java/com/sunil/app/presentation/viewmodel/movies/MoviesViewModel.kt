@@ -20,7 +20,9 @@ import com.sunil.app.domain.usecase.movies.GetMovieDetailsUseCase
 import com.sunil.app.domain.usecase.movies.GetMoviesWithSeparatorsUseCase
 import com.sunil.app.domain.usecase.movies.RemoveMovieFromFavoriteUseCase
 import com.sunil.app.domain.usecase.movies.SearchMoviesUseCase
+import com.sunil.app.domain.utils.NetworkMonitor
 import com.sunil.app.presentation.entity.movies.MovieListItem
+import com.sunil.app.presentation.extension.AppString
 import com.sunil.app.presentation.mapper.movies.toMovieListItem
 import com.sunil.app.presentation.ui.screens.movies.favourites.FavoriteUiState
 import com.sunil.app.presentation.ui.screens.movies.favourites.FavoritesNavigationState
@@ -47,6 +49,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -67,13 +70,14 @@ import javax.inject.Inject
 class MoviesViewModel @Inject constructor(
     private val addMovieToFavoritesUseCase: AddMovieToFavoritesUseCase,
     private val checkFavoriteStatusUseCase: CheckFavoriteStatusUseCase,
-    private val getFavoriteMoviesUseCase: GetFavoriteMoviesUseCase,
+    getFavoriteMoviesUseCase: GetFavoriteMoviesUseCase,
     private val getMovieDetailsUseCase: GetMovieDetailsUseCase,
     private val removeMovieFromFavoriteUseCase: RemoveMovieFromFavoriteUseCase,
     private val searchMoviesUseCase: SearchMoviesUseCase,
-    private val getMoviesWithSeparatorsUseCase: GetMoviesWithSeparatorsUseCase,
-    private val movieDetailsBundle: MovieDetailsBundle,
+    getMoviesWithSeparatorsUseCase: GetMoviesWithSeparatorsUseCase,
+    movieDetailsBundle: MovieDetailsBundle,
     private val savedStateHandle: SavedStateHandle,
+    private val networkMonitor: NetworkMonitor,
 ) : BaseViewModel() {
 
     companion object {
@@ -110,12 +114,12 @@ class MoviesViewModel @Inject constructor(
     /**
      * Flow of favorite movies, represented as PagingData.
      */
-    val favouriteMovies: Flow<PagingData<MovieListItem>> =
-        getFavoriteMoviesUseCase(DEFAULT_PAGE_SIZE)
-            .map { pagingData ->
+    val favouriteMovies: Flow<PagingData<MovieListItem>>? =
+        getFavoriteMoviesUseCase.invoke(DEFAULT_PAGE_SIZE)
+            ?.map { pagingData ->
                 pagingData.map { it.toMovieListItem() }
             }
-            .cachedIn(coroutineScope)
+            ?.cachedIn(coroutineScope)
 
 
     /**
@@ -124,6 +128,10 @@ class MoviesViewModel @Inject constructor(
      * @param movieId The ID of the clicked movie.
      */
     fun onFavouriteMovieClicked(movieId: Int) {
+        if (movieId <= 0) {
+            Timber.tag(TAG).d("Invalid movieId: Must be greater than 0")
+            return
+        }
         _navigationFavouriteMovieState.tryEmit(FavoritesNavigationState.MovieDetails(movieId))
     }
 
@@ -182,9 +190,9 @@ class MoviesViewModel @Inject constructor(
             }
             .filter { it.isNotEmpty() }
             .flatMapLatest { query ->
-                searchMoviesUseCase(query, DEFAULT_PAGE_SIZE).map { pagingData ->
+                searchMoviesUseCase(query, DEFAULT_PAGE_SIZE)?.map { pagingData ->
                     pagingData.map { it.toMovieListItem() }
-                }
+                }!!
             }
             .cachedIn(viewModelScope)
 
@@ -195,6 +203,10 @@ class MoviesViewModel @Inject constructor(
      * @param query The search query.
      */
     fun onSearchMovie(query: String) {
+        if (query.isEmpty()) {
+            Timber.tag(TAG).d("Invalid query: Search query is empty")
+            return
+        }
         savedStateHandle[KEY_SEARCH_QUERY] = query
     }
 
@@ -204,6 +216,10 @@ class MoviesViewModel @Inject constructor(
      * @param movieId The ID of the clicked movie.
      */
     fun onSearchMovieClicked(movieId: Int) {
+        if (movieId <= 0) {
+            Timber.tag(TAG).d("Invalid movieId: Must be greater than 0")
+            return
+        }
         _navigationSearchMovieState.tryEmit(SearchNavigationState.MovieDetails(movieId))
     }
 
@@ -234,9 +250,9 @@ class MoviesViewModel @Inject constructor(
     /**
      * Flow of movie items to be displayed in the feed.
      */
-    val movieFeed: Flow<PagingData<MovieListItem>> = getMoviesWithSeparatorsUseCase.invoke(
+    val movieFeed: Flow<PagingData<MovieListItem>>? = getMoviesWithSeparatorsUseCase.invoke(
         pageSize = FEED_PAGE_SIZE
-    ).cachedIn(coroutineScope)
+    )?.cachedIn(coroutineScope)
 
     /**
      * StateFlow representing the current UI state of the feed screen.
@@ -247,8 +263,10 @@ class MoviesViewModel @Inject constructor(
     /**
      * SharedFlow for navigation events from the feed screen.
      */
-    private val _navigationFeedMovieState: MutableSharedFlow<FeedNavigationState> = singleSharedFlow()
-    val navigationFeedMovieState: SharedFlow<FeedNavigationState> = _navigationFeedMovieState.asSharedFlow()
+    private val _navigationFeedMovieState: MutableSharedFlow<FeedNavigationState> =
+        singleSharedFlow()
+    val navigationFeedMovieState: SharedFlow<FeedNavigationState> =
+        _navigationFeedMovieState.asSharedFlow()
 
     /**
      * SharedFlow used to trigger a refresh of the movie list.
@@ -260,13 +278,13 @@ class MoviesViewModel @Inject constructor(
      * Observes changes in network connectivity and triggers a refresh if necessary.
      */
     private fun observeNetworkStatus() {
-//        networkMonitor.networkState
-//            .onEach { networkState ->
-//                if (networkState.shouldRefresh && networkState.isConnected) {
-//                    onRefresh()
-//                }
-//            }
-//            .launchIn(viewModelScope)
+        networkMonitor.networkState
+            .onEach { networkState ->
+                if (networkState.shouldRefresh && networkState.isOnline) {
+                    onRefresh()
+                }
+            }
+            .launchIn(coroutineScope)
     }
 
     /**
@@ -275,6 +293,10 @@ class MoviesViewModel @Inject constructor(
      * @param movieId The ID of the clicked movie.
      */
     fun onMovieClicked(movieId: Int) {
+        if (movieId <= 0) {
+            Timber.tag(TAG).d("Invalid movieId: Must be greater than 0")
+            return
+        }
         _navigationFeedMovieState.tryEmit(FeedNavigationState.MovieDetails(movieId))
     }
 
@@ -299,7 +321,14 @@ class MoviesViewModel @Inject constructor(
      */
     fun onRefresh() {
         coroutineScope.launch {
-            _refreshTrigger.emit(Unit)
+            try {
+                _refreshTrigger.emit(Unit)
+            } catch (e: Exception) {
+                // Handle the specific exception, such as UnknownHostException
+                Timber.tag(TAG).e(e)
+                _message.value =
+                    resourceProvider.getString(AppString.internet_too_slow) ?: "Unknown error"
+            }
         }
     }
 
@@ -324,6 +353,10 @@ class MoviesViewModel @Inject constructor(
      * It then updates the UI state with the retrieved data.
      */
     private fun loadMovieDetails() {
+        if (movieId <= 0) {
+            Timber.tag(TAG).d("Invalid movieId: Must be greater than 0")
+            return
+        }
         coroutineScope.launch {
             // Use coroutineScope to run async and getMovieById concurrently
             coroutineScope {
@@ -358,19 +391,24 @@ class MoviesViewModel @Inject constructor(
      * and updates the UI state.
      */
     fun onFavoriteMovieClicked() {
+        if (movieId <= 0) {
+            Timber.tag(TAG).d("Invalid movieId: Must be greater than 0")
+            return
+        }
         coroutineScope.launch {
-            // Use withContext(Dispatchers.IO) for database operations
-            val result = withContext(Dispatchers.IO) {
-                checkFavoriteStatus(movieId)
-            }
-            result.onSuccess { isFavorite ->
-                // Toggle the favorite status
-                val favoriteResult = if (isFavorite) {
-                    removeMovieFromFavoriteUseCase.invoke(movieId)
-                } else {
-                    addMovieToFavoritesUseCase.invoke(movieId)
-                    _uiMovieDetailsState.update { it.copy(isFavorite = !isFavorite) }
+            try {
+                // Use withContext(Dispatchers.IO) for database operations
+                val result = withContext(Dispatchers.IO) {
+                    checkFavoriteStatus(movieId)
                 }
+                result.onSuccess { isFavorite ->
+                    // Toggle the favorite status
+                    if (isFavorite) {
+                        removeMovieFromFavoriteUseCase.invoke(movieId)
+                    } else {
+                        addMovieToFavoritesUseCase.invoke(movieId)
+                        _uiMovieDetailsState.update { it.copy(isFavorite = !isFavorite) }
+                    }
 
 //                favoriteResult.onSuccess {
 //                    // Update the UI state with the new favorite status
@@ -379,29 +417,46 @@ class MoviesViewModel @Inject constructor(
 //                    // Handle failure, e.g., show an error message
 //                    Timber.tag(TAG).e("Error updating favorite status: ${e.message}")
 //                }
-            }.onError {
-                // Handle failure, e.g., show an error message
-                Timber.tag(TAG).e("Error checking favorite status: ${it.message}")
+                }.onError {
+                    // Handle failure, e.g., show an error message
+                    Timber.tag(TAG).e("Error checking favorite status: ${it.message}")
+                }
+            } catch (e: Exception) {
+                // Handle the specific exception, such as UnknownHostException
+                Timber.tag(TAG).e(e)
+                _message.value =
+                    resourceProvider.getString(AppString.internet_too_slow) ?: "Unknown error"
             }
         }
     }
 
-    /**
-     * Retrieves the details of a movie by its ID.
-     *
-     * @param movieId The ID of the movie.
-     * @return A Result containing the MovieEntity or an error.
-     */
-    private suspend fun getMovieById(movieId: Int): Result<MovieEntity> =
-        getMovieDetailsUseCase.invoke(movieId)
+        /**
+         * Retrieves the details of a movie by its ID.
+         *
+         * @param movieId The ID of the movie.
+         * @return A Result containing the MovieEntity or an error.
+         */
+        private suspend fun getMovieById(movieId: Int): Result<MovieEntity> {
+            if (movieId <= 0) {
+                Timber.tag(TAG).d("Invalid movieId: Must be greater than 0")
+                return Result.Error(IllegalArgumentException("Invalid movieId: Must be greater than 0"))
+            }
+            return getMovieDetailsUseCase.invoke(movieId)
+        }
 
-    /**
-     * Checks if a movie is marked as a favorite.
-     *
-     * @param movieId The ID of the movie.
-     * @return A Result containing true if the movie is a favorite, false otherwise, or an error.
-     */
-    private suspend fun checkFavoriteStatus(movieId: Int): Result<Boolean> =
-        checkFavoriteStatusUseCase.invoke(movieId)
 
-}
+        /**
+         * Checks if a movie is marked as a favorite.
+         *
+         * @param movieId The ID of the movie.
+         * @return A Result containing true if the movie is a favorite, false otherwise, or an error.
+         */
+        private suspend fun checkFavoriteStatus(movieId: Int): Result<Boolean> {
+            if (movieId <= 0) {
+                Timber.tag(TAG).d("Invalid movieId: Must be greater than 0")
+                return Result.Error(IllegalArgumentException("Invalid movieId: Must be greater than 0"))
+            }
+            return checkFavoriteStatusUseCase.invoke(movieId)
+        }
+
+    }

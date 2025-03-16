@@ -184,7 +184,7 @@ fun <T> Any?.toTypedJson(): String? = runCatching {
 }.getOrNull()
 
 /**
- * Creates a deep copy of an object using JSON serialization anddeserialization.
+ * Creates a deep copy of an object using JSON serialization and deserialization.
  *
  * @return A deep copy of the object.
  */
